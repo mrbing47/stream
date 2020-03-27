@@ -1,14 +1,12 @@
+const path = require("path");
+const fs = require("fs");
+const fsp = require("fs").promises;
+
 const express = require("express");
 const app = express();
 
-var cookieParser = require("cookie-parser");
-app.use(cookieParser());
-
-const script = require("./script/script.js");
-
-const path = require("path");
-const fs = require("fs");
 const morgan = require("morgan");
+const script = require("./script/script.js");
 
 //const dotenv = require("dotenv").config({ path: path.join(__dirname + "/.env") });
 //const expand = require("dotenv-expand");
@@ -32,21 +30,34 @@ app.use(express.static(frontend));
 var videoDetails = undefined;
 
 app.get("/", (req, res) => {
-	if (videoDetails) res.cookie("path", "/").render("index", { data: videoDetails });
-	else {
-		fs.readFile(process.env.JSON_FILE, (err, data) => {
-			if (err) throw err;
-
-			var result = JSON.parse(data);
-			videoDetails = result;
-
-			res.cookie("path", "/").render("index", { data: result });
-		});
-	}
+	const encryptPath = script.encryptPath("root");
+	res.render("index", { data: videoDetails, path: encryptPath });
 });
 
-app.get("/video/:video", (req, res) => {
-	const filePath = path.join(process.env.ROOT, req.params.video) + ".mp4";
+app.get("/file", (req, res) => {
+	const decryptPath = script.decryptPath(req.query.path);
+
+	const fileExt = req.query.folder.slice(-3);
+
+	console.log(fileExt);
+
+	const pathReq = path.join(decryptPath, "\\", req.query.folder.slice(0, -4)).trim();
+
+	console.log(pathReq);
+
+	const result = script.iterateDir(videoDetails, pathReq, fileExt);
+
+	if (result == 404) {
+		res.status(404).send("Wrong Video!!!");
+		return;
+	}
+
+	console.log(result);
+
+	const pathArr = pathReq.split("\\");
+	pathArr.shift();
+
+	const filePath = path.join(process.env.ROOT, pathArr.join("\\") + "." + fileExt);
 	const fileSize = fs.statSync(filePath).size;
 
 	const range = req.headers.range;
@@ -84,7 +95,12 @@ app.get("/video/:video", (req, res) => {
 
 app.get("/tn/:tn", (req, res) => {
 	fs.readdir(process.env.TN, (err, data) => {
-		if (err) res.status(500).send(err);
+		if (err) {
+			res.status(500).send(err);
+			return;
+		}
+
+		console.log(data);
 
 		if (data.includes(req.params.tn))
 			res.sendFile(path.join(process.env.TN, "/" + req.params.tn));
@@ -92,32 +108,36 @@ app.get("/tn/:tn", (req, res) => {
 	});
 });
 
-app.post("/folder/:folder", (req, res) => {
-	const pathReq = path.join(req.cookies.path, req.params.folder).trim();
+app.get("/folder", (req, res) => {
+	const decryptPath = script.decryptPath(req.query.path);
+	const pathReq = path.join(decryptPath, "\\", req.query.folder).trim();
 
-	const pathArr = pathReq.split("\\");
+	console.log(pathReq);
 
-	console.log(pathArr);
+	const result = script.iterateDir(videoDetails, pathReq);
 
-	var currFolder = videoDetails;
-
-	for (var ix = 1; ix < pathArr.length; ix++) {
-		const fileObj = currFolder.find(e => e.title === pathArr[ix]);
-
-		if (!fileObj) res.status(404).send("Wrong Path!!!");
-
-		currFolder = fileObj.files;
+	if (result == 404 || Object.prototype.toString.call(result) != "[object Array]") {
+		res.status(404).send("Wrong Path!!!");
+		return;
 	}
 
-	console.log(currFolder);
-
-	res.render("index", { data: currFolder });
+	const encryptPath = script.encryptPath(pathReq);
+	res.render("index", { data: result, path: encryptPath });
 });
 
 const PORT = process.env.PORT || 4769;
 
 const updateAndListen = async function() {
-	await script.updateDetails();
+	try {
+		await script.updateDetails();
+
+		const data = await fsp.readFile(process.env.JSON_FILE);
+
+		var result = JSON.parse(data);
+		videoDetails = result;
+	} catch (err) {
+		console.log(err);
+	}
 	console.log("Listening to PORT => " + PORT);
 };
 

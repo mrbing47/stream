@@ -15,13 +15,13 @@
 </head>
 
 <body>
-    <div class="video-container">
+    <div class="video-container" id="<%= path %> ">
         <% data.forEach(file => { %>
 
         <% if (file.type === "file") { %>
 
-        <div class="video-card file" id="<%= file.title %>">
-            <div class="video-img">
+        <div class="video-card file" id="<%= file.title + "." + file.extension %>">
+            <div class=" video-img">
                 <% if (file.tn) { %>
                 <div class="video-tn" style="background:url('<%= `/tn/${file.title}.png`%>');"></div>
                 <% } else {%>
@@ -45,7 +45,7 @@
         <% }else { %>
 
         <div class="video-card folder" id="<%= file.title %>">
-            <div class="video-img"><i class="fas fa-folder fa-6x"></i></div>
+            <div class=" video-img"><i class="fas fa-folder fa-6x"></i></div>
             <div class="video-details">
                 <div class="video-title">
                     <% if(file.title.length > 45){ %>

@@ -1,17 +1,15 @@
-const folderCards = document.getElementsByClassName("folder");
-const fileCards = document.getElementsByClassName("file");
+const videoCards = document.getElementsByClassName("video-card");
+const container = document.getElementsByClassName("video-container");
 
-for (const card of folderCards) {
+for (const card of videoCards) {
 	card.addEventListener("click", event => {
-		fetch("/folder/" + card.id, {
-			method: "POST"
+		const url = new URL("/" + card.classList[1], window.location.origin);
+
+		url.search = new URLSearchParams({
+			path: container[0].id,
+			folder: card.id
 		});
-	});
-}
 
-for (const card of fileCards) {
-	card.addEventListener("click", event => {
-		fetch("/video");
-		console.log(document.cookie);
+		window.location.href = url.href;
 	});
 }

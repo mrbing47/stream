@@ -13,6 +13,8 @@ const tnPath = process.env.TN;
 const ffprobe = require("ffprobe-client");
 const FFmpeg = require("fluent-ffmpeg");
 
+const CryptoJS = require("crypto-js");
+
 var isTn = true;
 
 async function getFiles(folderPath, copyJson) {
@@ -137,13 +139,9 @@ async function updateDetails() {
 	}
 
 	const data = await getFiles(process.env.ROOT, json);
-
-	if (json.length === 0) {
-	}
-
 	const copyJson = JSON.stringify(data.filesInside);
 
-	if (inputJson !== copyJson) {
+	if (inputJson != copyJson) {
 		const outputJson = data.filesInside.sort((a, b) =>
 			a.title.localeCompare(b.title, "en", {
 				sensitivity: "base"
@@ -159,6 +157,52 @@ async function updateDetails() {
 	}
 }
 
+function encryptPath(path) {
+	return CryptoJS.AES.encrypt(path, process.env.SECRET_KEY, {
+		iv: process.env.SECRET_KEY,
+		mode: CryptoJS.mode.CBC,
+		padding: CryptoJS.pad.Pkcs7
+	}).toString();
+}
+
+function decryptPath(path) {
+	return CryptoJS.AES.decrypt(path, process.env.SECRET_KEY, {
+		iv: process.env.SECRET_KEY
+	}).toString(CryptoJS.enc.Utf8);
+}
+
+function iterateDir(videoDetails, pathReq, fileExt) {
+	fileExt = fileExt || "";
+
+	const pathArr = pathReq.split("\\");
+
+	var currFolder = videoDetails;
+
+	for (var ix = 1; ix < pathArr.length; ix++) {
+		console.log(currFolder);
+		console.log("\n\n\n");
+
+		const fileObj = currFolder.find(
+			e => e.title === pathArr[ix] && (e.extension ? e.extension === fileExt : true)
+		);
+
+		console.log(fileObj);
+
+		if (!fileObj) return 404;
+
+		if (fileObj.files) currFolder = fileObj.files;
+		else {
+			currFolder = fileObj;
+			break;
+		}
+	}
+
+	return currFolder;
+}
+
 module.exports = {
-	updateDetails
+	updateDetails,
+	encryptPath,
+	decryptPath,
+	iterateDir
 };

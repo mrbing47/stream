@@ -10,7 +10,7 @@
 	"author": "Sarthik Garg <sarthikgarg01@gmail.com> (https://www.github.com/mrbing47)",
 	"license": "ISC",
 	"dependencies": {
-		"cookie-parser": "^1.4.5",
+		"crypto-js": "^4.0.0",
 		"dotenv": "^8.2.0",
 		"dotenv-expand": "^5.1.0",
 		"ejs": "^3.0.1",

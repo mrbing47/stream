@@ -6,8 +6,11 @@
 	box-sizing: border-box;
 }
 
-.video-container {
+body {
 	background-color: #212121;
+}
+
+.video-container {
 	width: 100%;
 	padding: 20px;
 	display: inline-grid;
@@ -15,6 +18,15 @@
 	justify-content: center;
 	align-items: center;
 	gap: 12px;
+}
+
+.video-card {
+	background-color: #424242;
+	display: flex;
+	height: 260px;
+	flex-direction: column;
+	border-radius: 8px;
+	overflow: hidden;
 }
 
 .video-img {
@@ -37,14 +49,6 @@
 	color: #1b1b1b;
 }
 
-.video-card {
-	background-color: #424242;
-	display: flex;
-	height: 260px;
-	flex-direction: column;
-	border-radius: 8px;
-	overflow: hidden;
-}
 
 .video-details {
 	padding: 8px;
