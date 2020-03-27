@@ -29,7 +29,7 @@ FRONTEND=../frontend
 SECRET_KEY=string_for_encryption
 ```
 
-Here you need to change `ROOT` and `SECRET_KET` variables. </br>
+Here you need to change `ROOT` and `SECRET_KEY` variables. </br>
 
 `SECRET_KEY`:
 >For the key, when you pass a string, it's treated as a passphrase and used to derive an actual key and IV. Or you can pass a WordArray that represents the actual key. If you pass the actual key, you must also pass the actual IV.
