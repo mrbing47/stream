@@ -15,7 +15,7 @@ const FFmpeg = require("fluent-ffmpeg");
 
 const CryptoJS = require("crypto-js");
 
-const supportedExt = ["mp4", "mkv"];
+const supportedExt = ["mp4", "mkv", "avi"];
 
 var isTn = true;
 

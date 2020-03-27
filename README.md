@@ -4,7 +4,6 @@ This server is useful in this hard time of quarantine period. Using this server,
 
 ---
 
-
 ## Project Setup
 
 Follow below steps in **order** to setup project:
@@ -14,7 +13,6 @@ Follow below steps in **order** to setup project:
 3. Use `npm start` to start the server.
 
 ---
-
 
 ## _.env_ Setup
 
@@ -33,16 +31,15 @@ SECRET_KEY=string_for_encryption
 
 Here you need to change `ROOT` and `SECRET_KEY` variables. </br>
 
->What is `SECRET_KEY`?</br>
-For the key, when you pass a string, it's treated as a passphrase and used to derive an actual key and IV. Or you can pass a WordArray that represents the actual key. If you pass the actual key, you must also pass the actual IV.
+> What is `SECRET_KEY`?</br>
+> For the key, when you pass a string, it's treated as a passphrase and used to derive an actual key and IV. Or you can pass a WordArray that represents the actual key. If you pass the actual key, you must also pass the actual IV.
 
 ---
-
 
 ## NOTE
 
 1. To generate thumbnails for **video** files, create a folder`tn` inside `ROOT` directory.
-2. This app supports multiple extensions for all type of files, currently this code only has `.mp4` and `.mkv` extensions but you can add more extensions in array `supportedExt` in file `/backend/script/script.js :: line 18`.
+2. This app supports multiple extensions for all type of files, currently this code only has some extensions but you can add more extensions in array `supportedExt` in file `/backend/script/script.js :: line 18`.
 
 </br>
 

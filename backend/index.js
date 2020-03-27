@@ -103,8 +103,6 @@ app.get("/tn/:tn", (req, res) => {
 			return;
 		}
 
-		console.log(data);
-
 		if (data.includes(req.params.tn))
 			res.sendFile(path.join(process.env.TN, "/" + req.params.tn));
 		else res.status(404).send("INCORRECT id");
