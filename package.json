@@ -1,0 +1,23 @@
+{
+	"name": "stream-video",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "nodemon ./backend/index.js"
+	},
+	"keywords": [],
+	"author": "Sarthik Garg <sarthikgarg01@gmail.com> (https://www.github.com/mrbing47)",
+	"license": "ISC",
+	"dependencies": {
+		"cookie-parser": "^1.4.5",
+		"dotenv": "^8.2.0",
+		"dotenv-expand": "^5.1.0",
+		"ejs": "^3.0.1",
+		"express": "^4.17.1",
+		"ffprobe": "^1.1.0",
+		"ffprobe-client": "^1.1.6",
+		"fluent-ffmpeg": "^2.1.2",
+		"morgan": "^1.10.0"
+	}
+}

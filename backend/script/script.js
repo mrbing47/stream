@@ -1,0 +1,164 @@
+const fs = require("fs");
+const fsp = fs.promises;
+const path = require("path");
+
+const dotenv = require("dotenv").config({ path: path.join(__dirname, "../.env") });
+const expand = require("dotenv-expand");
+expand(dotenv);
+
+const jsonPath = process.env.JSON_PATH;
+const jsonFile = process.env.JSON_FILE;
+const tnPath = process.env.TN;
+
+const ffprobe = require("ffprobe-client");
+const FFmpeg = require("fluent-ffmpeg");
+
+var isTn = true;
+
+async function getFiles(folderPath, copyJson) {
+	var newEntry = false;
+
+	try {
+		const files = await fsp.readdir(folderPath);
+
+		for (const i in files) {
+			const filePath = path.join(folderPath, files[i]);
+
+			try {
+				const fileStats = await fsp.stat(filePath);
+
+				const fileObj = copyJson.find(e => {
+					if (e) {
+						if (e.type === "folder") return e.title === files[i];
+						else return e.title + "." + e.extension === files[i];
+					}
+				});
+
+				if (fileStats.isDirectory()) {
+					if (!fileObj) {
+						console.log("FOLDER => " + files[i]);
+						const { filesInside } = await getFiles(filePath, []);
+
+						if (filesInside.length != 0) {
+							const folderDetails = {
+								type: "folder",
+								title: files[i],
+								path: filePath,
+								files: filesInside
+							};
+
+							newEntry = true;
+							copyJson.splice(i, 0, folderDetails);
+						}
+					} else {
+						const { filesInside, hasChanged } = await getFiles(filePath, fileObj.files);
+
+						if (hasChanged) {
+							files[i].files = filesInside.sort((a, b) =>
+								a.title.localeCompare(b.title, "en", {
+									sensitivity: "base"
+								})
+							);
+
+							files.splice(i, 1, files[i]);
+
+							newEntry = hasChanged;
+						}
+					}
+				}
+				if (fileStats.isFile()) {
+					if (!fileObj) {
+						const fileExt = files[i].split(".").slice(-1)[0];
+
+						if (fileExt === "mp4" || fileExt === "mkv") {
+							console.log("FILE => " + files[i]);
+							try {
+								const video = await ffprobe(filePath);
+
+								const videoMins =
+									"" + parseInt(parseInt(video.format.duration) / 60);
+								var videoSec = parseInt(video.format.duration) % 60;
+								if (videoSec < 10) {
+									videoSec = "0" + videoSec;
+								}
+
+								var videoDetails = {
+									type: "file",
+									title: files[i].slice(0, -4),
+									extension: fileExt,
+									duration: videoMins + ":" + videoSec,
+									size: parseInt(parseInt(video.format.size) / (1024 * 1024)),
+									tn: isTn,
+									path: filePath
+								};
+
+								if (isTn) {
+									new FFmpeg(filePath).screenshot({
+										timemarks: ["20%"],
+										filename: "%b",
+										folder: tnPath
+									});
+								}
+								newEntry = true;
+								copyJson.splice(i, 0, videoDetails);
+							} catch (err) {
+								console.log(err);
+							}
+						}
+					}
+				}
+			} catch (err) {
+				console.log(err);
+			}
+		}
+	} catch (err) {
+		console.log(err);
+	}
+
+	return { filesInside: copyJson, hasChanged: newEntry };
+}
+
+async function updateDetails() {
+	if (!fs.existsSync(jsonPath))
+		fs.mkdirSync(jsonPath, err => {
+			throw err;
+		});
+	if (!fs.existsSync(tnPath)) isTn = false;
+
+	var json = [];
+	var inputJson = "";
+	if (fs.existsSync(jsonFile)) {
+		inputJson = await fsp.readFile(jsonFile);
+		try {
+			json = JSON.parse(inputJson);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	const data = await getFiles(process.env.ROOT, json);
+
+	if (json.length === 0) {
+	}
+
+	const copyJson = JSON.stringify(data.filesInside);
+
+	if (inputJson !== copyJson) {
+		const outputJson = data.filesInside.sort((a, b) =>
+			a.title.localeCompare(b.title, "en", {
+				sensitivity: "base"
+			})
+		);
+
+		fs.writeFile(jsonFile, JSON.stringify(outputJson), err => {
+			if (err) console.log(err);
+			else console.log("Write was successful");
+		});
+	} else {
+		console.log("No Updates!!");
+	}
+}
+
+module.exports = {
+	updateDetails
+};

@@ -1,0 +1,86 @@
+*,
+*::after,
+*::before {
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
+}
+
+.video-container {
+	background-color: #212121;
+	width: 100%;
+	padding: 20px;
+	display: inline-grid;
+	grid-template-columns: repeat(auto-fill, 300px);
+	justify-content: center;
+	align-items: center;
+	gap: 12px;
+}
+
+.video-img {
+	height: 172px;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.video-tn {
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	width: 100%;
+	height: 100%;
+}
+
+.fas {
+	color: #1b1b1b;
+}
+
+.video-card {
+	background-color: #424242;
+	display: flex;
+	height: 260px;
+	flex-direction: column;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.video-details {
+	padding: 8px;
+	height: 88px;
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+	color: white;
+	font-family: 'Comfortaa', cursive;
+}
+
+.video-title {
+	height: min-content;
+	grid-row: 1 / span 1;
+	grid-column: 1 / span 2;
+	text-align: left;
+	font-size: 16px;
+	line-height: 1.5em;
+	padding: 0px 12px;
+	overflow: hidden;
+	word-wrap: break-word;
+}
+
+.video-size {
+	grid-row: 2 / span 1;
+	grid-column: 1 / span 1;
+	text-align: start;
+	padding: 12px 24px;
+	font-size: 12px;
+}
+
+.video-duration {
+	padding: 12px 24px;
+	grid-row: 2 / span 1;
+	grid-column: 2 / span 1;
+	text-align: end;
+	font-size: 12px;
+}
