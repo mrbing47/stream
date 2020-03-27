@@ -2,7 +2,9 @@
 
 This server is useful in this hard time of quarantine period. Using this server, stream all your entertainment content over your LAN so that others can enjoy without using internet or copying the file over their device, while maintaining a social distance.
 
+
 ---
+
 
 ## Project Setup
 
