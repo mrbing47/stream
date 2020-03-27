@@ -2,9 +2,9 @@
 
 This server is useful in this hard time of quarantine period. Using this server, stream all your entertainment content over your LAN so that others can enjoy without using internet or copying the file over their device, while maintaining a social distance.
 
-
+</br>
 ---
-
+</br>
 
 ## Project Setup
 
@@ -14,7 +14,9 @@ Follow below steps in **order** to setup project:
 2. Setup `dotenv` file (information given below).
 3. Use `npm start` to start the server.
 
+</br>
 ---
+</br>
 
 ## _.env_ Setup
 
@@ -36,7 +38,9 @@ Here you need to change `ROOT` and `SECRET_KEY` variables. </br>
 >What is `SECRET_KEY`?</br>
 For the key, when you pass a string, it's treated as a passphrase and used to derive an actual key and IV. Or you can pass a WordArray that represents the actual key. If you pass the actual key, you must also pass the actual IV.
 
+</br>
 ---
+</br>
 
 ## NOTE
 
