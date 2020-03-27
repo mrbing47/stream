@@ -46,7 +46,6 @@ body {
 	color: #1b1b1b;
 }
 
-
 .video-details {
 	padding: 8px;
 	height: 88px;
@@ -55,7 +54,7 @@ body {
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: 1fr 1fr;
 	color: white;
-	font-family: 'Comfortaa', cursive;
+	font-family: "Comfortaa", cursive;
 }
 
 .video-title {
