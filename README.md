@@ -38,7 +38,7 @@ For the key, when you pass a string, it's treated as a passphrase and used to de
 
 ## NOTE
 
-> This app supports multiple extensions for all type of files, currently this code only has `.mp4` and `.mkv` extensions but you can add more extensions in array `supportedExt` in file `/backend/script/script.js :: line 18`.
+This app supports multiple extensions for all type of files, currently this code only has `.mp4` and `.mkv` extensions but you can add more extensions in array `supportedExt` in file `/backend/script/script.js :: line 18`.
 
 </br>
 
