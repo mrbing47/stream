@@ -4,8 +4,8 @@ This server is useful in this hard time of quarantine period. Using this server,
 </br>
 
 ---
-
 </br>
+
 ## Project Setup
 
 Follow below steps in **order** to setup project:
@@ -16,8 +16,8 @@ Follow below steps in **order** to setup project:
 </br>
 
 ---
-
 </br>
+
 ## _.env_ Setup
 
 You need to add **_.env_** (dotenv) file to `/backend` folder, variables you need to setup:
@@ -40,8 +40,8 @@ For the key, when you pass a string, it's treated as a passphrase and used to de
 </br>
 
 ---
-
 </br>
+
 ## NOTE
 
 This app supports multiple extensions for all type of files, currently this code only has `.mp4` and `.mkv` extensions but you can add more extensions in array `supportedExt` in file `/backend/script/script.js :: line 18`.
