@@ -23,7 +23,10 @@
         <div class="video-card file" id="<%= file.title + "." + file.extension %>">
             <div class=" video-img">
                 <% if (file.tn) { %>
-                <div class="video-tn" style="background:url('<%= `/tn/${file.title}.png`%>');"></div>
+                <div class="video-tn" style="background:url('<%= `/tn/${file.title}.png`%>');
+                    background-size: contain;
+                	background-repeat: no-repeat;
+	                background-position: center;"></div>
                 <% } else {%>
                 <i class="fas fa-film fa-6x"></i>
                 <% } %>
