@@ -15,6 +15,8 @@ const FFmpeg = require("fluent-ffmpeg");
 
 const CryptoJS = require("crypto-js");
 
+const supportedExt = ["mp4", "mkv"];
+
 var isTn = true;
 
 async function getFiles(folderPath, copyJson) {
@@ -70,9 +72,11 @@ async function getFiles(folderPath, copyJson) {
 				}
 				if (fileStats.isFile()) {
 					if (!fileObj) {
-						const fileExt = files[i].split(".").slice(-1)[0];
+						const fileParts = files[i].split(".");
+						const fileTitle = [...fileParts.slice(0, -1)].join(".");
+						const fileExt = fileParts.slice(-1)[0];
 
-						if (fileExt === "mp4" || fileExt === "mkv") {
+						if (supportedExt.includes(fileExt)) {
 							console.log("FILE => " + files[i]);
 							try {
 								const video = await ffprobe(filePath);
@@ -86,7 +90,7 @@ async function getFiles(folderPath, copyJson) {
 
 								var videoDetails = {
 									type: "file",
-									title: files[i].slice(0, -4),
+									title: fileTitle,
 									extension: fileExt,
 									duration: videoMins + ":" + videoSec,
 									size: parseInt(parseInt(video.format.size) / (1024 * 1024)),

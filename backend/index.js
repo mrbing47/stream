@@ -37,11 +37,14 @@ app.get("/", (req, res) => {
 app.get("/file", (req, res) => {
 	const decryptPath = script.decryptPath(req.query.path);
 
-	const fileExt = req.query.folder.slice(-3);
+	const fileParts = req.query.folder.split(".");
+	const fileTitle = [...fileParts.slice(0, -1)].join(".");
+	const fileExt = fileParts.slice(-1)[0];
 
+	console.log(fileTitle);
 	console.log(fileExt);
 
-	const pathReq = path.join(decryptPath, "\\", req.query.folder.slice(0, -4)).trim();
+	const pathReq = path.join(decryptPath, "\\", fileTitle).trim();
 
 	console.log(pathReq);
 
