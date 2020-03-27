@@ -33,7 +33,7 @@ SECRET_KEY=string_for_encryption
 
 ## NOTE
 
-> This app supports multiple extensions for all type of files, currently this code only has _`.mp4`_ and _`.mkv`_ extensions but you can add more extensions in array _`supportedExt`_ in file _`/backend/script/script.js ::`_ **_`line 18`_**.
+> This app supports multiple extensions for all type of files, currently this code only has `.mp4` and `.mkv` extensions but you can add more extensions in array `supportedExt` in file `/backend/script/script.js :: line 18`.
 
 </br>
 
