@@ -16,7 +16,7 @@ Follow below steps in **order** to setup project:
 
 ## _.env_ Setup
 
-You need to add **_.env_** (dotenv) file to `/backend` folder, variables you need to setup:
+You need to add `.env` (dotenv) file to `/backend` folder, variables you need to setup:
 
 ```
 ROOT=path/to/your/content
@@ -36,10 +36,29 @@ Here you need to change `ROOT` and `SECRET_KEY` variables. </br>
 
 ---
 
+## _stream.cmd_
+
+This files allows the user to open the server in the present directory like
+
+```
+path/to/your/content> stream
+```
+
+or by passing the path as an argument like
+
+```
+some/random/directory> stream path/to/your/content
+```
+
+in the **Command Prompt**. This way, user don't have to hard code `ROOT` in `.env` file
+
+---
+
 ## NOTE
 
-1. To generate thumbnails for **video** files, create a folder`tn` inside `ROOT` directory.
+1. To generate thumbnails for **video** files, create a folder `tn` inside `ROOT` directory.
 2. This app supports multiple extensions for all type of files, currently this code only has some extensions but you can add more extensions in array `supportedExt` in file `/backend/script/script.js :: line 18`.
+3. To use `stream.cmd` as a Command Prompt command, add the **Project** directory to the `PATH` variables.
 
 </br>
 

@@ -15,7 +15,7 @@ const FFmpeg = require("fluent-ffmpeg");
 
 const CryptoJS = require("crypto-js");
 
-const supportedExt = ["mp4", "mkv", "avi"];
+const supportedExt = ["mp4", "mkv", "m4v"];
 
 var isTn = true;
 
@@ -76,7 +76,15 @@ async function getFiles(folderPath, copyJson) {
 						const fileTitle = [...fileParts.slice(0, -1)].join(".");
 						const fileExt = fileParts.slice(-1)[0];
 
-						if (supportedExt.includes(fileExt)) {
+						if (
+							supportedExt.some(ext => {
+								return (
+									ext.localeCompare(fileExt, "en", {
+										sensitivity: "base"
+									}) == 0
+								);
+							})
+						) {
 							console.log("FILE => " + files[i]);
 							try {
 								const video = await ffprobe(filePath);
@@ -183,14 +191,9 @@ function iterateDir(videoDetails, pathReq, fileExt) {
 	var currFolder = videoDetails;
 
 	for (var ix = 1; ix < pathArr.length; ix++) {
-		console.log(currFolder);
-		console.log("\n\n\n");
-
 		const fileObj = currFolder.find(
 			e => e.title === pathArr[ix] && (e.extension ? e.extension === fileExt : true)
 		);
-
-		console.log(fileObj);
 
 		if (!fileObj) return 404;
 

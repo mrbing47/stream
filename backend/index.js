@@ -8,11 +8,6 @@ const app = express();
 const morgan = require("morgan");
 const script = require("./script/script.js");
 
-//const dotenv = require("dotenv").config({ path: path.join(__dirname + "/.env") });
-//const expand = require("dotenv-expand");
-
-//expand(dotenv);
-
 const frontend = path.join(__dirname, process.env.FRONTEND);
 
 app.set("view engine", "ejs");
@@ -41,12 +36,7 @@ app.get("/file", (req, res) => {
 	const fileTitle = [...fileParts.slice(0, -1)].join(".");
 	const fileExt = fileParts.slice(-1)[0];
 
-	console.log(fileTitle);
-	console.log(fileExt);
-
 	const pathReq = path.join(decryptPath, "\\", fileTitle).trim();
-
-	console.log(pathReq);
 
 	const result = script.iterateDir(videoDetails, pathReq, fileExt);
 
@@ -54,8 +44,6 @@ app.get("/file", (req, res) => {
 		res.status(404).send("Wrong Video!!!");
 		return;
 	}
-
-	console.log(result);
 
 	const pathArr = pathReq.split("\\");
 	pathArr.shift();
@@ -112,8 +100,6 @@ app.get("/tn/:tn", (req, res) => {
 app.get("/folder", (req, res) => {
 	const decryptPath = script.decryptPath(req.query.path);
 	const pathReq = path.join(decryptPath, "\\", req.query.folder).trim();
-
-	console.log(pathReq);
 
 	const result = script.iterateDir(videoDetails, pathReq);
 
