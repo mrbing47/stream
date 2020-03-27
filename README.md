@@ -38,7 +38,7 @@ Here you need to change `ROOT` and `SECRET_KEY` variables. </br>
 
 ## _stream.cmd_
 
-This files allows the user to open the server in the present directory like
+This files allows the user to start the server from **Command Prompt** either in the present directory like
 
 ```
 path/to/your/content> stream
@@ -47,10 +47,10 @@ path/to/your/content> stream
 or by passing the path as an argument like
 
 ```
-some/random/directory> stream path/to/your/content
+some/random/directory> stream "path/to/your/content"
 ```
 
-in the **Command Prompt**. This way, user don't have to hard code `ROOT` in `.env` file
+This way, user don't have to hard code `ROOT` in `.env` file
 
 ---
 
