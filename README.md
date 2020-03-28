@@ -11,6 +11,7 @@ Follow below steps in **order** to setup project:
 1. Run `npm i` to install node packages.
 2. Setup `dotenv` file (information given below).
 3. Use `npm start` to start the server.
+4. (Optional) Edit `stream.cmd`.
 
 ---
 
@@ -37,6 +38,12 @@ Here you need to change `ROOT` and `SECRET_KEY` variables. </br>
 ---
 
 ## _stream.cmd_
+
+-   Edit `stream.cmd` and add the root of the project, ie to `package.json` in line:
+
+```
+cd /d "path/to/project/root"
+```
 
 This files allows the user to start the server from **Command Prompt** either in the **present** directory like
 
