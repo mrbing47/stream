@@ -39,7 +39,7 @@ Here you need to change `ROOT` and `SECRET_KEY` variables. </br>
 
 ## _stream.cmd_
 
--   Edit `stream.cmd` and add the root of the project, ie to `package.json`. Edit the following line:
+ Edit `stream.cmd` and add the root of the project, ie to `package.json`. Edit the following line:
 
 ```
 cd /d "path/to/project/root"
