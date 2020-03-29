@@ -8,10 +8,11 @@ This server is useful in this hard time of quarantine period. Using this server,
 
 Follow below steps in **order** to setup project:
 
-1. Run `npm i` to install node packages.
-2. Setup `dotenv` file (information given below).
-3. Use `npm start` to start the server.
-4. (Optional) Edit `stream.cmd`.
+1. Install `ffmpeg` for your respective OS.
+2. Run `npm i` to install node packages.
+3. Setup `dotenv` file (information given below).
+4. Use `npm start` to start the server.
+5. (Optional) Edit `stream.cmd`.
 
 ---
 
