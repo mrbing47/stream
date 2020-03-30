@@ -89,7 +89,8 @@ async function getFiles(folderPath, copyJson) {
 							try {
 								const video = await ffprobe(filePath);
 
-								const videoMins = "" + parseInt(parseInt(video.format.duration) / 60);
+								const videoMins =
+									"" + parseInt(parseInt(video.format.duration) / 60);
 								var videoSec = parseInt(video.format.duration) % 60;
 								if (videoSec < 10) {
 									videoSec = "0" + videoSec;
@@ -150,18 +151,14 @@ async function updateDetails() {
 	}
 
 	const data = await getFiles(process.env.ROOT, json);
-	const updatedJson = JSON.stringify(data.filesInside);
+	const copyJson = JSON.stringify(data.filesInside);
 
-	var output = data.filesInside;
-
-	if (inputJson != updatedJson) {
+	if (inputJson != copyJson) {
 		const outputJson = data.filesInside.sort((a, b) =>
 			a.title.localeCompare(b.title, "en", {
 				sensitivity: "base"
 			})
 		);
-
-		output = JSON.parse(outputJson);
 
 		fs.writeFile(jsonFile, JSON.stringify(outputJson), err => {
 			if (err) console.log(err);
@@ -170,8 +167,6 @@ async function updateDetails() {
 	} else {
 		console.log("No Updates!!");
 	}
-
-	return output;
 }
 
 function encryptPath(path) {
@@ -190,11 +185,13 @@ function decryptPath(path) {
 
 function iterateDir(videoDetails, pathReq, fileExt) {
 	fileExt = fileExt || "";
-	const pathArr = pathReq.split("\\").length == 1 ? pathReq.split("/") : pathReq.split("\\");
+	const pathArr = pathReq.split("\\").length==1?pathReq.split('/'):pathReq.split("\\");
 	var currFolder = videoDetails;
 
 	for (var ix = 1; ix < pathArr.length; ix++) {
-		const fileObj = currFolder.find(e => e.title === pathArr[ix] && (e.extension ? e.extension === fileExt : true));
+		const fileObj = currFolder.find(
+			e => e.title === pathArr[ix] && (e.extension ? e.extension === fileExt : true)
+		);
 
 		if (!fileObj) return 404;
 

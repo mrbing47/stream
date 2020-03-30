@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
 
 app.get("/file", (req, res) => {
 	const decryptPath = script.decryptPath(req.query.path);
-	console.log("query-path => ", decryptPath);
+	console.log("query path ",decryptPath)
 
 	const fileParts = req.query.folder.split(".");
 	const fileTitle = [...fileParts.slice(0, -1)].join(".");
@@ -46,10 +46,10 @@ app.get("/file", (req, res) => {
 		return;
 	}
 
-	const pathArr = pathReq.split("\\").length == 1 ? pathReq.split("/") : pathReq.split("\\");
+	const pathArr = pathReq.split("\\").length==1?pathReq.split('/'):pathReq.split("\\");
 	pathArr.shift();
-	let finalPath = path.join(...pathArr);
-
+	let finalPath=path.join(...pathArr)
+	
 	const filePath = path.join(process.env.ROOT, finalPath + "." + fileExt);
 	const fileSize = fs.statSync(filePath).size;
 
@@ -93,7 +93,8 @@ app.get("/tn/:tn", (req, res) => {
 			return;
 		}
 
-		if (data.includes(req.params.tn)) res.sendFile(path.join(process.env.TN, "/" + req.params.tn));
+		if (data.includes(req.params.tn))
+			res.sendFile(path.join(process.env.TN, "/" + req.params.tn));
 		else res.status(404).send("INCORRECT id");
 	});
 });
@@ -117,7 +118,12 @@ const PORT = process.env.PORT || 4769;
 
 const updateAndListen = async function() {
 	try {
-		videoDetails = await script.updateDetails();
+		await script.updateDetails();
+
+		const data = await fsp.readFile(process.env.JSON_FILE);
+
+		var result = JSON.parse(data);
+		videoDetails = result;
 	} catch (err) {
 		console.log(err);
 	}
