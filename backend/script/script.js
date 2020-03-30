@@ -185,9 +185,7 @@ function decryptPath(path) {
 
 function iterateDir(videoDetails, pathReq, fileExt) {
 	fileExt = fileExt || "";
-
-	const pathArr = pathReq.split("\\");
-
+	const pathArr = pathReq.split("\\").length==1?pathReq.split('/'):pathReq.split("\\");
 	var currFolder = videoDetails;
 
 	for (var ix = 1; ix < pathArr.length; ix++) {

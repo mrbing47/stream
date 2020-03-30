@@ -31,12 +31,13 @@ app.get("/", (req, res) => {
 
 app.get("/file", (req, res) => {
 	const decryptPath = script.decryptPath(req.query.path);
+	console.log("query path ",decryptPath)
 
 	const fileParts = req.query.folder.split(".");
 	const fileTitle = [...fileParts.slice(0, -1)].join(".");
 	const fileExt = fileParts.slice(-1)[0];
 
-	const pathReq = path.join(decryptPath, "\\", fileTitle).trim();
+	const pathReq = path.join(decryptPath, fileTitle).trim();
 
 	const result = script.iterateDir(videoDetails, pathReq, fileExt);
 
@@ -45,10 +46,11 @@ app.get("/file", (req, res) => {
 		return;
 	}
 
-	const pathArr = pathReq.split("\\");
+	const pathArr = pathReq.split("\\").length==1?pathReq.split('/'):pathReq.split("\\");
 	pathArr.shift();
-
-	const filePath = path.join(process.env.ROOT, pathArr.join("\\") + "." + fileExt);
+	let finalPath=path.join(...pathArr)
+	
+	const filePath = path.join(process.env.ROOT, finalPath + "." + fileExt);
 	const fileSize = fs.statSync(filePath).size;
 
 	const range = req.headers.range;
@@ -99,7 +101,7 @@ app.get("/tn/:tn", (req, res) => {
 
 app.get("/folder", (req, res) => {
 	const decryptPath = script.decryptPath(req.query.path);
-	const pathReq = path.join(decryptPath, "\\", req.query.folder).trim();
+	const pathReq = path.join(decryptPath, req.query.folder).trim();
 
 	const result = script.iterateDir(videoDetails, pathReq);
 
