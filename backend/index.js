@@ -49,8 +49,9 @@ app.get("/file", (req, res) => {
 	const pathArr = pathReq.split("\\").length==1?pathReq.split('/'):pathReq.split("\\");
 	// console.log(pathArr)
 	pathArr.shift();
-	const reducer = (accumulator, currentValue) => path.join(accumulator , currentValue);
-	let finalPath=pathArr.reduce(reducer)
+	// const reducer = (accumulator, currentValue) => path.join(accumulator , currentValue);
+	// let finalPath=pathArr.reduce(reducer)
+	let finalPath=path.join(...pathArr)
 	console.log("Final Path --> ",finalPath)
 	const filePath = path.join(process.env.ROOT, finalPath + "." + fileExt);
 	const fileSize = fs.statSync(filePath).size;
