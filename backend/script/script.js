@@ -6,9 +6,12 @@ const dotenv = require("dotenv").config({ path: path.join(__dirname, "../.env") 
 const expand = require("dotenv-expand");
 expand(dotenv);
 
-const jsonPath = process.env.JSON_PATH;
-const jsonFile = process.env.JSON_FILE;
+const jsonPath = process.env.JSON_PATH.toString().trim();
+const jsonFile = process.env.JSON_FILE.toString().trim();
 const tnPath = process.env.TN;
+const sorting = process.env.SORT;
+
+console.log(jsonPath);
 
 const ffprobe = require("ffprobe-client");
 const FFmpeg = require("fluent-ffmpeg");
@@ -31,7 +34,7 @@ async function getFiles(folderPath, copyJson) {
 			try {
 				const fileStats = await fsp.stat(filePath);
 
-				const fileObj = copyJson.find(e => {
+				const fileObj = copyJson.find((e) => {
 					if (e) {
 						if (e.type === "folder") return e.title === files[i];
 						else return e.title + "." + e.extension === files[i];
@@ -48,23 +51,31 @@ async function getFiles(folderPath, copyJson) {
 								type: "folder",
 								title: files[i],
 								path: filePath,
-								files: filesInside
+								files: filesInside,
 							};
 
 							newEntry = true;
-							copyJson.splice(i, 0, folderDetails);
+							if (sorting != 0) copyJson.splice(i, 0, folderDetails);
+							else copyJson.unshift(folderDetails);
 						}
 					} else {
 						const { filesInside, hasChanged } = await getFiles(filePath, fileObj.files);
 
-						if (hasChanged) {
-							files[i].files = filesInside.sort((a, b) =>
-								a.title.localeCompare(b.title, "en", {
-									sensitivity: "base"
-								})
-							);
+						console.log(fileObj.title, "=> ", hasChanged);
 
-							files.splice(i, 1, files[i]);
+						if (hasChanged) {
+							if (sorting != 0) {
+								files[i].files = filesInside.sort((a, b) =>
+									a.title.localeCompare(b.title, "en", {
+										sensitivity: "base",
+									})
+								);
+
+								files.splice(i, 1, files[i]);
+							} else {
+								files.splice(i, 1);
+								files.unshift(files[i]);
+							}
 
 							newEntry = hasChanged;
 						}
@@ -77,10 +88,10 @@ async function getFiles(folderPath, copyJson) {
 						const fileExt = fileParts.slice(-1)[0];
 
 						if (
-							supportedExt.some(ext => {
+							supportedExt.some((ext) => {
 								return (
 									ext.localeCompare(fileExt, "en", {
-										sensitivity: "base"
+										sensitivity: "base",
 									}) == 0
 								);
 							})
@@ -102,18 +113,20 @@ async function getFiles(folderPath, copyJson) {
 									duration: videoMins + ":" + videoSec,
 									size: parseInt(parseInt(video.format.size) / (1024 * 1024)),
 									tn: isTn,
-									path: filePath
+									path: filePath,
 								};
 
 								if (isTn) {
 									new FFmpeg(filePath).screenshot({
 										timemarks: ["20%"],
 										filename: "%b",
-										folder: tnPath
+										folder: tnPath,
 									});
 								}
 								newEntry = true;
-								copyJson.splice(i, 0, videoDetails);
+
+								if (sorting != 0) copyJson.splice(i, 0, videoDetails);
+								else copyJson.unshift(videoDetails);
 							} catch (err) {
 								console.log(err);
 							}
@@ -132,8 +145,12 @@ async function getFiles(folderPath, copyJson) {
 }
 
 async function updateDetails() {
+	if (sorting < 0 && sorting > 2) {
+		throw new Error("Wrong Sorting Method");
+	}
+
 	if (!fs.existsSync(jsonPath))
-		fs.mkdirSync(jsonPath, err => {
+		fs.mkdirSync(jsonPath, (err) => {
 			throw err;
 		});
 	if (!fs.existsSync(tnPath)) isTn = false;
@@ -155,15 +172,19 @@ async function updateDetails() {
 	var output = data.filesInside;
 
 	if (inputJson != updatedJson) {
-		const outputJson = data.filesInside.sort((a, b) =>
-			a.title.localeCompare(b.title, "en", {
-				sensitivity: "base"
-			})
-		);
+		var outputJson;
 
-		output = JSON.parse(outputJson);
+		if (sorting != 0)
+			outputJson = data.filesInside.sort((a, b) =>
+				a.title.localeCompare(b.title, "en", {
+					sensitivity: "base",
+				})
+			);
+		else outputJson = data.filesInside;
 
-		fs.writeFile(jsonFile, JSON.stringify(outputJson), err => {
+		output = outputJson;
+
+		fs.writeFile(jsonFile, JSON.stringify(outputJson), (err) => {
 			if (err) console.log(err);
 			else console.log("Write was successful");
 		});
@@ -178,13 +199,13 @@ function encryptPath(path) {
 	return CryptoJS.AES.encrypt(path, process.env.SECRET_KEY, {
 		iv: process.env.SECRET_KEY,
 		mode: CryptoJS.mode.CBC,
-		padding: CryptoJS.pad.Pkcs7
+		padding: CryptoJS.pad.Pkcs7,
 	}).toString();
 }
 
 function decryptPath(path) {
 	return CryptoJS.AES.decrypt(path, process.env.SECRET_KEY, {
-		iv: process.env.SECRET_KEY
+		iv: process.env.SECRET_KEY,
 	}).toString(CryptoJS.enc.Utf8);
 }
 
@@ -194,7 +215,7 @@ function iterateDir(videoDetails, pathReq, fileExt) {
 	var currFolder = videoDetails;
 
 	for (var ix = 1; ix < pathArr.length; ix++) {
-		const fileObj = currFolder.find(e => e.title === pathArr[ix] && (e.extension ? e.extension === fileExt : true));
+		const fileObj = currFolder.find((e) => e.title === pathArr[ix] && (e.extension ? e.extension === fileExt : true));
 
 		if (!fileObj) return 404;
 
@@ -212,5 +233,5 @@ module.exports = {
 	updateDetails,
 	encryptPath,
 	decryptPath,
-	iterateDir
+	iterateDir,
 };

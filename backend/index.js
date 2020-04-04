@@ -26,7 +26,9 @@ var videoDetails = undefined;
 
 app.get("/", (req, res) => {
 	const encryptPath = script.encryptPath("root");
-	res.render("index", { data: videoDetails, path: encryptPath });
+
+	if (videoDetails) res.render("index", { data: videoDetails, path: encryptPath });
+	else res.status(500).send("INTERNAL ERROR!!!");
 });
 
 app.get("/file", (req, res) => {
@@ -71,7 +73,7 @@ app.get("/file", (req, res) => {
 			"Content-Range": `bytes ${start}-${end}/${fileSize}`,
 			"Accept-Ranges": "bytes",
 			"Content-Length": chunksize,
-			"Content-Type": "video/mp4"
+			"Content-Type": "video/mp4",
 		};
 
 		res.writeHead(206, head);
@@ -79,7 +81,7 @@ app.get("/file", (req, res) => {
 	} else {
 		const head = {
 			"Content-Length": fileSize,
-			"Content-Type": "video/mp4"
+			"Content-Type": "video/mp4",
 		};
 		res.writeHead(200, head);
 		fs.createReadStream(filePath).pipe(res);
@@ -115,7 +117,7 @@ app.get("/folder", (req, res) => {
 
 const PORT = process.env.PORT || 4769;
 
-const updateAndListen = async function() {
+const updateAndListen = async function () {
 	try {
 		videoDetails = await script.updateDetails();
 	} catch (err) {
