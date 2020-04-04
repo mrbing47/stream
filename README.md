@@ -64,7 +64,7 @@ OR
 some/random/directory> stream 0/1/2
 ```
 
-3. Pass the **pass** and **sorting** method both like:
+3. Pass the **path** and **sorting** method both like:
 
 ```
 some/random/directory> stream "path/to/your/content" 0/1/2

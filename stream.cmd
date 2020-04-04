@@ -30,10 +30,11 @@ if NOT [%2] == [] (
 	set SORT=%2
 )
 
-echo %ROOT%
-
-
 :RUN
 cd /d "path/to/project/root"
 
+echo *****WELCOME TO STREAM VIDEO*****
+
 npm start
+
+
