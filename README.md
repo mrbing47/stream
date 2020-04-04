@@ -25,16 +25,22 @@ ROOT=path/to/your/content
 TN=${ROOT}\tn
 JSON_PATH=${ROOT}\json
 JSON_FILE=${ROOT}\json\details.json
+SORT=0/1
 
 FRONTEND=../frontend
 
 SECRET_KEY=string_for_encryption
 ```
 
-Here you need to change `ROOT` and `SECRET_KEY` variables. <br>
+Here you need to change `ROOT` and `SECRET_KEY` variables and specify a value or `SORT`. <br>
 
 > What is `SECRET_KEY`?<br>
 > For the key, when you pass a string, it's treated as a passphrase and used to derive an actual key and IV. Or you can pass a WordArray that represents the actual key. If you pass the actual key, you must also pass the actual IV.
+
+> What are the `SORT` ?<br>
+> It is the sorting methods are for those files which are being updated, or if the `json` is being created for the first time, how they are being sorted. `sorting` methods are:<br><br>
+> 0 => Added on the top, showing the **most recent** files on the **top**.<br>
+> 1 => Add the file **alphabetical** in order.<br>
 
 ---
 
@@ -61,21 +67,16 @@ some/random/directory> stream "path/to/your/content"
 
 OR
 
-some/random/directory> stream 0/1/2
+some/random/directory> stream 0/1
 ```
 
 3. Pass the **path** and **sorting** method both like:
 
 ```
-some/random/directory> stream "path/to/your/content" 0/1/2
+some/random/directory> stream "path/to/your/content" 0/1
 ```
 
 This way, user don't have to hard code `ROOT` in `.env` file
-
-> What are the `sorting` methods?<br>
-> These sorting methods are for those files which are being updated, or if the `json` is being created for the first time, how they are being sorted. `sorting` methods are:<br><br>
-> 0 => Added on the top, showing the **most recent** files on the **top**.<br>
-> 1 => Add the file **alphabetical** in order.<br>
 
 _**PS**: NEVER LEARN BATCH_
 
