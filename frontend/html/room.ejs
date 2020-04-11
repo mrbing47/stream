@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<script defer src="/socket.io/socket.io.js"></script>
+
+		<link rel="stylesheet" href="/css/room.css" type="text/css" />
+		<link rel="stylesheet" href="/css/global.css" />
+		<script defer src="/js/cookieFn.js"></script>
+		<script defer src="/js/room.js"></script>
+
+		<script src="https://kit.fontawesome.com/8d8384e88c.js" crossorigin="anonymous"></script>
+		<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+
+		<title><%= room.title %></title>
+	</head>
+	<body>
+		<div class="video-container">
+			<video controls id="video">
+				<source
+					src=" 
+				<% if (video.src) { %>
+					<%= video.src %> 
+				<% } %>
+				"
+					type="video/mp4"
+					id="video-source"
+				/>
+			</video>
+			<div class="video-details">
+				<div id="video-title">
+					<% if (video.title) { %> <%= video.title %> <% } %>
+				</div>
+				<div id="video-time">
+					<% if (video.time) { %> <%= video.time %> <% } %>
+				</div>
+				<div id="video-size">
+					<% if (video.size) { %> <%= video.size %> <% } %>
+				</div>
+			</div>
+		</div>
+		<div class="chat-container">
+			<div class="room-details">
+				<div id="room-title"><%= room.title %></div>
+				<div id="room-id"><%= room.id %></div>
+				<div class="room-viewers">
+					<i class="fas fa-eye"></i>
+					<div class="viewer-count">
+						<% if (room.viewers) { %> <%= room.viewers %> <% } %>
+					</div>
+				</div>
+			</div>
+
+			<div id="message-container"></div>
+			<div class="send-container">
+				<input type="text" name="chat-msg" id="user-msg" placeholder="Enter a message" />
+				<i class="fas fa-paper-plane" id="send-btn"></i>
+			</div>
+		</div>
+	</body>
+</html>

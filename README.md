@@ -38,7 +38,7 @@ Here you need to change `ROOT` and `SECRET_KEY` variables and specify a value or
 > For the key, when you pass a string, it's treated as a passphrase and used to derive an actual key and IV. Or you can pass a WordArray that represents the actual key. If you pass the actual key, you must also pass the actual IV.
 
 > What are the `SORT` ?<br>
-> It is the sorting methods are for those files which are being updated, or if the `json` is being created for the first time, how they are being sorted. `sorting` methods are:<br><br>
+> These are the sorting methods are for those files which are being updated or added, or if the `json` is being created for the first time, how they are being sorted. `sorting` methods are:<br><br>
 > 0 => Added on the top, showing the **most recent** files on the **top**.<br>
 > 1 => Add the file **alphabetical** in order.<br>
 
