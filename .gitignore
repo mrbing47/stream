@@ -1,7 +1,7 @@
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
 
-# Created by https://www.gitignore.io/api/windows,visualstudiocode,dotenv,node
-# Edit at https://www.gitignore.io/?templates=windows,visualstudiocode,dotenv,node
+# Created by https://www.gitignore.io/api/windows,visualstudiocode,node,dotenv,video
+# Edit at https://www.gitignore.io/?templates=windows,visualstudiocode,node,dotenv,video
 
 ### dotenv ###
 .env
@@ -111,6 +111,22 @@ dist/
 tmp/
 temp/
 
+### Video ###
+*.3g2
+*.3gp
+*.asf
+*.asx
+*.avi
+*.flv
+*.mov
+*.mp4
+*.mkv
+*.mpg
+*.rm
+*.swf
+*.vob
+*.wmv
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
@@ -148,7 +164,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.gitignore.io/api/windows,visualstudiocode,dotenv,node
+# End of https://www.gitignore.io/api/windows,visualstudiocode,node,dotenv,video
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 

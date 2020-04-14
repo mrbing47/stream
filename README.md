@@ -2,6 +2,14 @@
 
 This server is useful in this hard time of quarantine period. Using this server, stream all your entertainment content over your LAN so that others can enjoy without using internet or copying the file over their device, while maintaining a social distance.
 
+It has features like:
+
+-   Impressive and Responsive UI.
+-   Join or Create Room, or watch personlly.
+-   Synchronised Video Playback in the room across all members.
+-   Controls of the video will be controled by the Leader (one who created the room by default).
+-   Real-time messaging in the Room so everyone can share their thoughts.
+
 ---
 
 ## Project Setup
@@ -38,7 +46,7 @@ Here you need to change `ROOT` and `SECRET_KEY` variables and specify a value or
 > For the key, when you pass a string, it's treated as a passphrase and used to derive an actual key and IV. Or you can pass a WordArray that represents the actual key. If you pass the actual key, you must also pass the actual IV.
 
 > What are the `SORT` ?<br>
-> It is the sorting methods are for those files which are being updated, or if the `json` is being created for the first time, how they are being sorted. `sorting` methods are:<br><br>
+> These are the sorting methods are for those files which are being updated or added, or if the `json` is being created for the first time, how they are being sorted. `sorting` methods are:<br><br>
 > 0 => Added on the top, showing the **most recent** files on the **top**.<br>
 > 1 => Add the file **alphabetical** in order.<br>
 
