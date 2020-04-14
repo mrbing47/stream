@@ -18,7 +18,8 @@
 	<body>
 		<div class="room-container container">
 			<input type="text" name="username" id="username" placeholder="Enter a Username" />
-			<input type="text" name="roomname" id="roomname" placeholder="Enter a Room Name/Id" />
+			<input type="text" name="roomname" id="roomname" placeholder="Enter a Room Name/Id" <% if (roomid !== "") { %>
+			value="<%= roomid %> " <% } %> />
 
 			<div class="btn-container">
 				<a href="#" id="join-btn">Join a Room</a>
@@ -27,7 +28,7 @@
 		</div>
 		<div class="or-text">OR</div>
 		<div class="personal-container container">
-			<a href="/folder" class="watch-personal">Watch Personally</a>
+			<a href="/folder" id="watch-personal">Watch Personally</a>
 		</div>
 
 		<div id="snackbar">

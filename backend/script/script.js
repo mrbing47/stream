@@ -50,7 +50,7 @@ async function getFiles(folderPath, copyJson) {
 							const folderDetails = {
 								type: "folder",
 								title: files[i],
-								path: filePath,
+								path: folderPath,
 								files: filesInside,
 							};
 
@@ -113,7 +113,7 @@ async function getFiles(folderPath, copyJson) {
 									duration: videoMins + ":" + videoSec,
 									size: parseInt(parseInt(video.format.size) / (1024 * 1024)),
 									tn: isTn,
-									path: filePath,
+									path: folderPath,
 								};
 
 								if (isTn) {

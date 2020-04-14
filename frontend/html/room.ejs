@@ -17,28 +17,16 @@
 		<title><%= room.title %></title>
 	</head>
 	<body>
-		<div class="video-container">
-			<video controls id="video">
-				<source
-					src=" 
-				<% if (video.src) { %>
-					<%= video.src %> 
-				<% } %>
-				"
-					type="video/mp4"
-					id="video-source"
-				/>
+		<div class="video-container" id="<%= usertype %> ">
+			<video id="video"
+			<% if (usertype === "leader") { %> controls <% } %>
+			>
+				<source src="<%= video.src %>" type="video/mp4" id="video-source" />
 			</video>
 			<div class="video-details">
-				<div id="video-title">
-					<% if (video.title) { %> <%= video.title %> <% } %>
-				</div>
-				<div id="video-time">
-					<% if (video.time) { %> <%= video.time %> <% } %>
-				</div>
-				<div id="video-size">
-					<% if (video.size) { %> <%= video.size %> <% } %>
-				</div>
+				<div id="video-title"><%= video.title %></div>
+				<div id="video-time"><%= video.time %></div>
+				<div id="video-size"><%= video.size %></div>
 			</div>
 		</div>
 		<div class="chat-container">
@@ -47,13 +35,14 @@
 				<div id="room-id"><%= room.id %></div>
 				<div class="room-viewers">
 					<i class="fas fa-eye"></i>
-					<div class="viewer-count">
-						<% if (room.viewers) { %> <%= room.viewers %> <% } %>
+					<div id="viewer-count">
+						<% if (typeof room.viewers === "number") { %> <%= room.viewers %> <% } %>
 					</div>
 				</div>
 			</div>
 
-			<div id="message-container"></div>
+			<div id="message-container">
+			</div>
 			<div class="send-container">
 				<input type="text" name="chat-msg" id="user-msg" placeholder="Enter a message" />
 				<i class="fas fa-paper-plane" id="send-btn"></i>

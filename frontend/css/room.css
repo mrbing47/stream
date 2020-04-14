@@ -96,6 +96,7 @@ body {
 .information {
 	justify-content: center;
 	margin: 8px 0px;
+	align-items: center;
 }
 
 .message .name {
@@ -178,8 +179,24 @@ body {
 		margin: 0px;
 	}
 
+	.video-details {
+		border-radius: 0px;
+	}
+
 	.chat-container {
 		width: 100%;
 		margin-top: 16px;
+	}
+
+	.room-details {
+		border-radius: 0px;
+	}
+
+	#message-container {
+		border-radius: 0px;
+	}
+
+	.send-container {
+		border-radius: 0px;
 	}
 }

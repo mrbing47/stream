@@ -5,10 +5,20 @@ const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io").listen(http);
-const session = require("express-session");
 
 const morgan = require("morgan");
 const script = require("./script/script.js");
+const session = require("express-session")({
+	secret: process.env.SECRET_KEY,
+	resave: true,
+	saveUninitialized: true,
+	cookie: {
+		maxAge: 1000 * 60 * 15,
+	},
+});
+const socketSession = require("express-socket.io-session");
+const cookieParser = require("cookie-parser");
+const uniqid = require("uniqid");
 
 const frontend = path.join(__dirname, process.env.FRONTEND);
 
@@ -16,10 +26,10 @@ var Rooms = [
 	{
 		title: "hello world",
 		id: "abcd",
-		viewers: 5,
+		viewers: 0,
 		video: {
 			title: "WOW",
-			src: "/sample2.mp4",
+			src: "/sample.mkv",
 			size: "501MB",
 			time: "10:51",
 		},
@@ -32,6 +42,24 @@ var Rooms = [
 	},
 ];
 
+function getCookies(strCookies) {
+	var cookies = strCookies.split(";");
+
+	var result = {};
+
+	for (var i of cookies) {
+		var cookie = i.trim().split("=");
+		var cookieValue = "";
+		for (var j in cookie) {
+			if (j != 0) cookieValue += cookie[j] + "=";
+		}
+
+		result[decodeURIComponent(cookie[0])] = cookieValue.slice(0, -1).trim();
+	}
+
+	return result;
+}
+
 app.set("view engine", "ejs");
 app.set("views", path.join(frontend, "/html"));
 
@@ -42,7 +70,18 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.use(session({ secret: process.env.SECRET_KEY, resave: true, saveUninitialized: true }));
+app.use(session);
+
+app.use("/file", (req, res, next) => {
+	const cookies = getCookies(req.headers.cookie);
+	if (cookies.video) {
+		const video = JSON.parse(cookies.video);
+		req.video = video;
+	}
+	next();
+});
+
+app.use(cookieParser());
 app.use(express.static(frontend));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -50,38 +89,118 @@ app.use(express.urlencoded({ extended: true }));
 var videoDetails = undefined;
 
 app.get("/", (req, res) => {
-	res.render("index");
+	var roomid = "";
+	if (req.query.roomid) {
+		roomid = req.query.roomid;
+	}
+	res.render("index", { roomid });
 });
 
 app.post("/login", (req, res) => {
-	if (Rooms.some((value) => value.id === req.body.roomid)) {
-		console.log("here");
-		res.json({
-			src: "/room/id/" + req.body.roomid,
-		});
-	} else {
-		res.json({
-			err: "Invalid Room Id.",
-		});
-	}
+	const userid = uniqid();
+
+	console.log(req.session.username);
+
+	if (req.body.usertype) {
+		if (req.body.usertype === "member") {
+			const roomIx = Rooms.findIndex((value) => value.id === req.body.room);
+			if (roomIx > -1) {
+				const newUser = {
+					name: req.body.username,
+					type: "member",
+					id: userid,
+					roomid: req.body.room,
+				};
+				Rooms[roomIx].users.push(newUser);
+
+				req.session.userid = userid;
+				req.session.username = req.body.username;
+				req.session.usertype = req.body.usertype;
+				req.session.roomid = req.body.room;
+				req.session.insideRoom = false;
+
+				res.cookie("userid", userid);
+				res.cookie("username", req.body.username);
+
+				res.json({
+					src: "/room/" + req.body.room,
+				});
+			} else {
+				res.json({
+					err: "Invalid Room Id.",
+				});
+			}
+		} else {
+			const roomid = uniqid();
+			const newUser = {
+				name: req.body.username,
+				type: "leader",
+				id: userid,
+				roomid: req.body.room,
+			};
+			var room = {
+				title: req.body.room,
+				id: roomid,
+				viewers: 0,
+				users: [],
+			};
+
+			room.users.push(newUser);
+			Rooms.push(room);
+
+			console.log(room);
+
+			req.session.userid = userid;
+			req.session.username = req.body.username;
+			req.session.usertype = req.body.usertype;
+			req.session.roomid = roomid;
+			req.session.insideRoom = false;
+
+			res.cookie("userid", userid);
+			res.cookie("username", req.body.username);
+
+			res.json({
+				src: "/folder",
+			});
+		}
+	} else res.send("Invalid Access!!!");
 });
 
-app.get("/room/id/:id", (req, res) => {
-	const roomObj = Rooms.find((value) => value.id === req.params.id);
+app.get("/room/:id", (req, res) => {
+	console.log(req.get("host"));
 
-	if (!roomObj) {
+	const roomIx = Rooms.findIndex((value) => value.id === req.params.id);
+
+	if (roomIx == -1) {
 		res.send("Invalid Room Id!!!");
 		return;
 	}
 
-	res.render("room", {
-		room: {
-			title: roomObj.title,
-			id: roomObj.id,
-			viewers: roomObj.viewers,
-		},
-		video: roomObj.video,
-	});
+	if (
+		!req.session.roomid ||
+		req.session.roomid !== req.params.id ||
+		!Rooms[roomIx].users.some((value) => value.id === req.session.userid)
+	) {
+		console.log("if\n\n\n\n");
+		res.redirect("/?roomid=" + req.params.id);
+		return;
+	} else {
+		console.log("else\n\n\n\n");
+		const response = {
+			room: {
+				title: Rooms[roomIx].title,
+				id: Rooms[roomIx].id,
+				viewers: Rooms[roomIx].viewers,
+			},
+			video: {
+				...Rooms[roomIx].video,
+				src: Rooms[roomIx].video.src,
+			},
+			usertype: req.session.usertype,
+		};
+		req.session.insideRoom = true;
+		res.render("room", response);
+	}
 });
 
 app.get("/file", (req, res) => {
@@ -94,7 +213,6 @@ app.get("/file", (req, res) => {
 	console.log("query-path =>", decryptPath);
 
 	const fileParts = req.query.folder.split(".");
-	console.log(fileParts);
 	const fileTitle = [...fileParts.slice(0, -1)].join(".");
 	const fileExt = fileParts.slice(-1)[0];
 
@@ -121,6 +239,24 @@ app.get("/file", (req, res) => {
 		res.send("Wrong path or file name!!!");
 		return;
 	}
+
+	if (req.session.usertype === "leader" && !req.cookies.hasOwnProperty("watchmode")) {
+		const roomIx = Rooms.findIndex((value) => value.id === req.session.roomid);
+
+		if (
+			roomIx != -1 &&
+			Rooms[roomIx].users.some((value) => value.id === req.session.userid) &&
+			req.cookies.video &&
+			!req.session.insideRoom
+		) {
+			const video = JSON.parse(req.cookies.video);
+			video.src = req.url;
+			Rooms[roomIx].video = video;
+			res.redirect("/room/" + req.session.roomid);
+			return;
+		}
+	}
+
 	const range = req.headers.range;
 
 	if (range) {
@@ -154,18 +290,6 @@ app.get("/file", (req, res) => {
 	}
 });
 
-app.get("/tn/:tn", (req, res) => {
-	fs.readdir(process.env.TN, (err, data) => {
-		if (err) {
-			res.status(500).send(err);
-			return;
-		}
-
-		if (data.includes(req.params.tn)) res.sendFile(path.join(process.env.TN, "/" + req.params.tn));
-		else res.status(404).send("INCORRECT id");
-	});
-});
-
 app.get("/folder", (req, res) => {
 	if (!req.query.path && !req.query.folder) {
 		const encryptPath = script.encryptPath("root");
@@ -193,13 +317,90 @@ app.get("/folder", (req, res) => {
 	res.render("index", { data: result, path: encryptPath });
 });
 
+app.get("/tn/:tn", (req, res) => {
+	fs.readdir(process.env.TN, (err, data) => {
+		if (err) {
+			res.status(500).send(err);
+			return;
+		}
+
+		if (data.includes(req.params.tn)) res.sendFile(path.join(process.env.TN, "/" + req.params.tn));
+		else res.status(404).send("INCORRECT id");
+	});
+});
+
+io.use(socketSession(session));
+
 io.on("connection", (socket) => {
-	socket.on("create-room", (prevRoom, currRoomName, leaderName, ack) => {});
-	socket.on("join-room", (prevRoom, currRoom, username, ack) => {});
-	socket.on("user-join", (prevRoom, currRoom, username) => {});
-	socket.on("user-leave", (currRoom, username) => {});
-	socket.on("new-msg", (msg) => {
-		console.log(msg);
+	const roomid = socket.handshake.session.roomid;
+	const roomObj = Rooms.find((value) => value.id === roomid);
+	const uid = socket.handshake.session.userid;
+	const username = socket.handshake.session.username;
+	var usertype = socket.handshake.session.usertype;
+
+	if (!roomObj) {
+		socket.disconnect();
+	}
+
+	socket.on("user-join", () => {
+		socket.join(roomid);
+
+		socket.to(roomid).broadcast.emit("user-join", username);
+
+		const leaderId = roomObj.users[0].id;
+		socket.to(roomid).broadcast.emit("time-req", uid, leaderId);
+
+		roomObj.viewers++;
+	});
+
+	socket.on("time-res", (isPaused, currentTime, uid) => {
+		socket.to(roomid).broadcast.emit("time-res", isPaused, currentTime, uid);
+	});
+
+	socket.on("message", (msg) => {
+		socket.to(roomid).broadcast.emit("message", username, msg);
+	});
+	socket.on("play", () => {
+		if (usertype === "leader") {
+			socket.to(roomid).broadcast.emit("play");
+		}
+	});
+	socket.on("pause", () => {
+		if (usertype === "leader") {
+			socket.to(roomid).broadcast.emit("pause");
+		}
+	});
+	socket.on("seek", (time) => {
+		if (usertype === "leader") {
+			socket.to(roomid).broadcast.emit("seek", time);
+		}
+	});
+
+	socket.on("leader-confirm", () => {
+		usertype = "leader";
+	});
+	socket.on("disconnect", () => {
+		console.log("disconnect\n\n");
+
+		socket.leave(roomid);
+		const userRoomIx = roomObj.users.findIndex((value) => value.id === uid);
+		if (usertype === "leader" && roomObj.users.length > 1) {
+			roomObj.users[userRoomIx + 1].type = "leader";
+			const newLeaderName = roomObj.users[userRoomIx + 1].name;
+			const newLeaderId = roomObj.users[userRoomIx + 1].id;
+
+			socket.to(roomid).broadcast.emit("new-leader", newLeaderName, newLeaderId);
+		}
+		if (roomObj.viewers == 1) {
+			const roomIx = Rooms.findIndex((value) => value.id === roomObj.id);
+			Rooms.splice(roomIx, 1);
+		} else {
+			roomObj.users.splice(userRoomIx, 1);
+			roomObj.viewers--;
+		}
+		socket.to(roomid).broadcast.emit("user-leave", username);
+		socket.handshake.session.insideRoom = socket.handshake.session.username = socket.handshake.session.usertype = socket.handshake.session.roomid = socket.handshake.session.userid = undefined;
+		socket.handshake.session.save();
 	});
 });
 
