@@ -5,7 +5,7 @@ This server is useful in this hard time of quarantine period. Using this server,
 It has features like:
 
 -   Impressive and Responsive UI.
--   Join or Create Room, or watch personlly.
+-   Join or Create Room, or watch personally.
 -   Synchronised Video Playback in the room across all members.
 -   Controls of the video will be controled by the Leader (one who created the room by default).
 -   Real-time messaging in the Room so everyone can share their thoughts.
