@@ -16,9 +16,9 @@ for (const card of videoCards) {
 
 		if (cardType === "file") {
 			setCookie("video", {
-				title: card.querySelector(".video-title").innerHTML.trim(),
-				size: card.querySelector(".video-size").innerHTML.trim(),
-				time: card.querySelector(".video-duration").innerHTML.trim(),
+				title: card.querySelector(".video-title").innerText.trim(),
+				size: card.querySelector(".video-size").innerText.trim(),
+				time: card.querySelector(".video-duration").innerText.trim(),
 			});
 		}
 

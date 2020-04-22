@@ -66,7 +66,7 @@ app.set("views", path.join(frontend, "/html"));
 app.use(morgan("short"));
 
 app.use((req, res, next) => {
-	//res.set("Cache-Control", "public, max-age=600");
+	res.set("Cache-Control", "public, max-age=600");
 	next();
 });
 
@@ -74,6 +74,7 @@ app.use(session);
 
 app.use("/file", (req, res, next) => {
 	const cookies = getCookies(req.headers.cookie);
+
 	if (cookies.video) {
 		const video = JSON.parse(cookies.video);
 		req.video = video;
