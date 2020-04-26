@@ -9,9 +9,8 @@ expand(dotenv);
 const jsonPath = process.env.JSON_PATH.toString().trim();
 const jsonFile = process.env.JSON_FILE.toString().trim();
 const tnPath = process.env.TN;
-const sorting = process.env.SORT;
 
-console.log(jsonPath);
+console.log("json-path => ", process.env.JSON_PATH);
 
 const ffprobe = require("ffprobe-client");
 const FFmpeg = require("fluent-ffmpeg");
@@ -34,7 +33,7 @@ async function getFiles(folderPath, copyJson) {
 			try {
 				const fileStats = await fsp.stat(filePath);
 
-				const fileObj = copyJson.find((e) => {
+				const fileIx = copyJson.findIndex((e) => {
 					if (e) {
 						if (e.type === "folder") return e.title === files[i];
 						else return e.title + "." + e.extension === files[i];
@@ -42,7 +41,7 @@ async function getFiles(folderPath, copyJson) {
 				});
 
 				if (fileStats.isDirectory()) {
-					if (!fileObj) {
+					if (fileIx == -1) {
 						console.log("FOLDER => " + files[i]);
 						const { filesInside } = await getFiles(filePath, []);
 
@@ -52,37 +51,29 @@ async function getFiles(folderPath, copyJson) {
 								title: files[i],
 								path: folderPath,
 								files: filesInside,
+								birthtime: fileStats.birthtimeMs,
 							};
 
 							newEntry = true;
-							if (sorting != 0) copyJson.splice(i, 0, folderDetails);
-							else copyJson.unshift(folderDetails);
+							copyJson.push(folderDetails);
 						}
 					} else {
-						const { filesInside, hasChanged } = await getFiles(filePath, fileObj.files);
+						const { filesInside, hasChanged } = await getFiles(filePath, copyJson[fileIx].files);
 
-						console.log(fileObj.title, "=> ", hasChanged);
+						console.log(copyJson[fileIx].title, "=> ", hasChanged);
 
 						if (hasChanged) {
-							if (sorting != 0) {
-								files[i].files = filesInside.sort((a, b) =>
-									a.title.localeCompare(b.title, "en", {
-										sensitivity: "base",
-									})
-								);
-
-								files.splice(i, 1, files[i]);
-							} else {
-								files.splice(i, 1);
-								files.unshift(files[i]);
-							}
-
+							copyJson[fileIx].files = filesInside.sort((a, b) =>
+								a.title.localeCompare(b.title, "en", {
+									sensitivity: "base",
+								})
+							);
 							newEntry = hasChanged;
 						}
 					}
 				}
 				if (fileStats.isFile()) {
-					if (!fileObj) {
+					if (fileIx == -1) {
 						const fileParts = files[i].split(".");
 						const fileTitle = [...fileParts.slice(0, -1)].join(".");
 						const fileExt = fileParts.slice(-1)[0];
@@ -112,6 +103,7 @@ async function getFiles(folderPath, copyJson) {
 									extension: fileExt,
 									duration: videoMins + ":" + videoSec,
 									size: parseInt(parseInt(video.format.size) / (1024 * 1024)),
+									birthtime: fileStats.birthtimeMs,
 									tn: isTn,
 									path: folderPath,
 								};
@@ -125,8 +117,7 @@ async function getFiles(folderPath, copyJson) {
 								}
 								newEntry = true;
 
-								if (sorting != 0) copyJson.splice(i, 0, videoDetails);
-								else copyJson.unshift(videoDetails);
+								copyJson.push(videoDetails);
 							} catch (err) {
 								console.log(err);
 							}
@@ -145,10 +136,6 @@ async function getFiles(folderPath, copyJson) {
 }
 
 async function updateDetails() {
-	if (sorting < 0 && sorting > 2) {
-		throw new Error("Wrong Sorting Method");
-	}
-
 	if (!fs.existsSync(jsonPath))
 		fs.mkdirSync(jsonPath, (err) => {
 			throw err;
@@ -172,19 +159,13 @@ async function updateDetails() {
 	var output = data.filesInside;
 
 	if (inputJson != updatedJson) {
-		var outputJson;
+		output = output.sort((a, b) =>
+			a.title.localeCompare(b.title, "en", {
+				sensitivity: "base",
+			})
+		);
 
-		if (sorting != 0)
-			outputJson = data.filesInside.sort((a, b) =>
-				a.title.localeCompare(b.title, "en", {
-					sensitivity: "base",
-				})
-			);
-		else outputJson = data.filesInside;
-
-		output = outputJson;
-
-		fs.writeFile(jsonFile, JSON.stringify(outputJson), (err) => {
+		fs.writeFile(jsonFile, JSON.stringify(output), (err) => {
 			if (err) console.log(err);
 			else console.log("Write was successful");
 		});

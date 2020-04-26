@@ -66,7 +66,7 @@ app.set("views", path.join(frontend, "/html"));
 app.use(morgan("short"));
 
 app.use((req, res, next) => {
-	res.set("Cache-Control", "public, max-age=600");
+	//res.set("Cache-Control", "public, max-age=600");
 	next();
 });
 
@@ -295,8 +295,16 @@ app.get("/folder", (req, res) => {
 	if (!req.query.path && !req.query.folder) {
 		const encryptPath = script.encryptPath("root");
 
-		if (videoDetails) res.render("files", { data: videoDetails, path: encryptPath });
-		else res.status(500).send("INTERNAL ERROR!!!");
+		if (videoDetails) {
+			var sorted = [...videoDetails];
+
+			if (req.query.sort) {
+				if (req.query.sort === "latest") sorted = sorted.sort((a, b) => b.birthtime - a.birthtime);
+				if (req.query.sort === "oldest") sorted = sorted.sort((a, b) => a.birthtime - b.birthtime);
+			}
+
+			res.render("files", { data: sorted, path: encryptPath });
+		} else res.status(500).send("INTERNAL ERROR!!!");
 		return;
 	}
 	if (!req.query.path || !req.query.folder) {
@@ -307,11 +315,18 @@ app.get("/folder", (req, res) => {
 	const decryptPath = script.decryptPath(req.query.path);
 	const pathReq = path.join(decryptPath, req.query.folder).trim();
 
-	const result = script.iterateDir(videoDetails, pathReq);
+	var result = script.iterateDir(videoDetails, pathReq);
 
 	if (result == 404 || Object.prototype.toString.call(result) != "[object Array]") {
 		res.status(404).send("Wrong Path!!!");
 		return;
+	}
+
+	if (req.query.sort) {
+		if (req.query.sort) {
+			if (req.query.sort === "latest") result = result.sort((a, b) => b.birthtime - a.birthtime);
+			if (req.query.sort === "oldest") result = result.sort((a, b) => a.birthtime - b.birthtime);
+		}
 	}
 
 	const encryptPath = script.encryptPath(pathReq);

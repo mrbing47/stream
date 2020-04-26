@@ -1,68 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="/css/files.css" />
+		<link rel="stylesheet" href="/css/global.css" />
 
-    <link rel="stylesheet" href="/css/files.css">
-    <link rel="stylesheet" href="/css/global.css">
+		<script defer src="/js/cookieFn.js"></script>
+		<script defer src="/js/files.js"></script>
 
-    <script defer src="/js/cookieFn.js"></script>
-    <script defer src="/js/files.js"></script>
+		<script defer src="/socket.io/socket.io.js"></script>
+		<script src="https://kit.fontawesome.com/8d8384e88c.js" crossorigin="anonymous"></script>
+		<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
 
-    <script defer src="/socket.io/socket.io.js"></script>
-    <script src="https://kit.fontawesome.com/8d8384e88c.js" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
-		
-    <title>Stream Video</title>
-</head>
+		<title>Stream Video</title>
+	</head>
 
-<body>
-    <div class="video-container" id="<%= path %> ">
-        <% data.forEach(file => { %>
+	<body>
+		<div class="sort-container">
+			<div class="sort-txt">View By:</div>
+			<div class="dropdown">
+				<div id="selected"></div>
+				<div class="menu">
+					<div class="options" id="alpha">Alphabetically</div>
+					<div class="options" id="latest">Latest</div>
+					<div class="options" id="oldest">Oldest</div>
+				</div>
+			</div>
+		</div>
 
-        <% if (file.type === "file") { %>
+		<div class="video-container" id="<%= path %> ">
+			<% data.forEach(file => { %> <% if (file.type === "file") { %>
+			<div
+				class="video-card file"
+				id="<%= file.title +
+			'.' + file.extension %>"
+			>
+				<div class="video-img">
+					<% if (file.tn) { %>
+					<div
+						class="video-tn"
+						style="
+							background: url('<%= `/tn/${file.title}.png`%>');
+							background-size: contain;
+							background-repeat: no-repeat;
+							background-position: center;
+						"
+					></div>
+					<% } else {%>
+					<i class="fas fa-film fa-6x"></i>
+					<% } %>
+				</div>
+				<div class="video-details">
+					<div class="video-title" style="white-space: nowrap; text-overflow: ellipsis;">
+						<%= file.title %>
+					</div>
+					<div class="video-size"><%= file.size %> MB</div>
+					<div class="video-duration"><%= file.duration %></div>
+				</div>
+			</div>
 
-        <div class="video-card file" id="<%= file.title + "." + file.extension %>">
-            <div class=" video-img">
-                <% if (file.tn) { %>
-                <div class="video-tn" style="background:url('<%= `/tn/${file.title}.png`%>');
-                    background-size: contain;
-                	background-repeat: no-repeat;
-	                background-position: center;"></div>
-                <% } else {%>
-                <i class="fas fa-film fa-6x"></i>
-                <% } %>
-            </div>
-            <div class=" video-details">
-                <div class="video-title" style="white-space: nowrap;
-                text-overflow: ellipsis;">
-                    <%= file.title %>
-                </div>
-                <div class="video-size"><%= file.size %> MB</div>
-                <div class="video-duration"><%= file.duration %> </div>
-            </div>
-        </div>
+			<% }else { %>
 
-
-        <% }else { %>
-
-        <div class="video-card folder" id="<%= file.title %>">
-            <div class=" video-img"><i class="fas fa-folder fa-6x"></i></div>
-            <div class="video-details">
-                <div class="video-title">
-                    <% if(file.title.length > 45){ %>
-                    <%= file.title.slice(0, 42) + "..." %>
-                    <% } else{ %>
-                    <%= file.title %>
-                    <% } %>
-                </div>
-            </div>
-        </div>
-        <% }}); %>
-
-    </div>
-</body>
-
+			<div class="video-card folder" id="<%= file.title %>">
+				<div class="video-img"><i class="fas fa-folder fa-6x"></i></div>
+				<div class="video-details">
+					<div class="video-title">
+						<% if(file.title.length > 45){ %> <%= file.title.slice(0, 42) + "..." %> <% } else{ %> <%=
+						file.title %> <% } %>
+					</div>
+				</div>
+			</div>
+			<% }}); %>
+		</div>
+	</body>
 </html>

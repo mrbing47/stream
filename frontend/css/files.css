@@ -1,3 +1,57 @@
+.sort-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	margin: 36px 0px 28px;
+}
+
+.dropdown {
+	cursor: context-menu;
+	position: relative;
+	margin: 0px 16px;
+	color: var(--text-color);
+	border: var(--card-border-gray);
+	box-shadow: var(--card-shadow);
+	border-radius: 8px;
+	padding: 0.7em 1em;
+	background-color: var(--card-color);
+}
+
+.selected {
+	width: 100%;
+	height: 100%;
+}
+
+.dropdown:hover .menu {
+	visibility: visible;
+	opacity: 1;
+}
+
+.menu {
+	visibility: hidden;
+	opacity: 0;
+
+	top: 100%;
+	left: 0px;
+	position: absolute;
+	color: var(--text-color);
+	border: var(--card-border-gray);
+	box-shadow: var(--card-shadow);
+	border-radius: 8px;
+	padding: 0.7em 1em;
+	background-color: var(--card-color);
+}
+
+.options {
+	margin: 8px 0px;
+	cursor: pointer;
+}
+
+.options:hover {
+	color: var(--back-color);
+}
+
 .video-container {
 	width: 100%;
 	padding: 20px;

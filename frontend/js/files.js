@@ -1,7 +1,34 @@
 const videoCards = document.getElementsByClassName("video-card");
 const container = document.getElementsByClassName("video-container");
+const menuOptions = document.getElementsByClassName("options");
+const selectedOption = document.getElementById("selected");
+
+const urlParams = new URLSearchParams(window.location.search);
+const sortMethod = urlParams.get("sort");
+if (sortMethod) {
+	if (sortMethod === "alpha") selectedOption.innerText = menuOptions[0].innerHTML;
+	if (sortMethod === "latest") selectedOption.innerText = menuOptions[1].innerHTML;
+	if (sortMethod === "oldest") selectedOption.innerText = menuOptions[2].innerHTML;
+} else selectedOption.innerText = menuOptions[0].innerHTML;
+
+console.log(menuOptions[0].innerHTML);
 
 const cookies = getCookies();
+
+for (const option of menuOptions) {
+	option.addEventListener("click", (e) => {
+		if (selectedOption.innerText !== option.innerText) {
+			const urlParams = new URLSearchParams(window.location.search);
+
+			urlParams.set("sort", option.id);
+
+			const redirectedUrl = new URL(window.location.href);
+			redirectedUrl.search = urlParams;
+
+			window.location.href = redirectedUrl.href;
+		}
+	});
+}
 
 for (const card of videoCards) {
 	card.addEventListener("click", (event) => {
