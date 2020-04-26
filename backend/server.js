@@ -330,7 +330,7 @@ app.get("/folder", (req, res) => {
 	}
 
 	const encryptPath = script.encryptPath(pathReq);
-	res.render("index", { data: result, path: encryptPath });
+	res.render("files", { data: result, path: encryptPath });
 });
 
 app.get("/tn/:tn", (req, res) => {
