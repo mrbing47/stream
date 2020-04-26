@@ -10,8 +10,6 @@ const jsonPath = process.env.JSON_PATH.toString().trim();
 const jsonFile = process.env.JSON_FILE.toString().trim();
 const tnPath = process.env.TN;
 
-console.log("json-path => ", process.env.JSON_PATH);
-
 const ffprobe = require("ffprobe-client");
 const FFmpeg = require("fluent-ffmpeg");
 

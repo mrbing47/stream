@@ -1,9 +1,16 @@
 const btnSend = document.getElementById("send-btn");
+const btnCopy = document.getElementById("copy-id-btn");
 const userMsg = document.getElementById("user-msg");
 const roomId = document.getElementById("room-id");
 const messageContainer = document.getElementById("message-container");
 const video = document.getElementById("video");
 const viewerCount = document.getElementById("viewer-count");
+
+new ClipboardJS("#copy-id-btn", {
+	text: function () {
+		return roomId.innerText;
+	},
+});
 
 function displayMessage(type, name, msg) {
 	name = name;

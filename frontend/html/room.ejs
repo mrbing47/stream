@@ -8,6 +8,7 @@
 
 		<link rel="stylesheet" href="/css/room.css" type="text/css" />
 		<link rel="stylesheet" href="/css/global.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js"></script>
 		<script defer src="/js/cookieFn.js"></script>
 		<script defer src="/js/room.js"></script>
 
@@ -32,7 +33,7 @@
 		<div class="chat-container">
 			<div class="room-details">
 				<div id="room-title"><%= room.title %></div>
-				<div id="room-id"><%= room.id %></div>
+				<div id="room-id"><i id="copy-id-btn" class="far fa-copy"></i><%= room.id %></div>
 				<div class="room-viewers">
 					<i class="fas fa-eye"></i>
 					<div id="viewer-count">
