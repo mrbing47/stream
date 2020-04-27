@@ -1,30 +1,30 @@
 *,
 *::after,
 *::before {
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
 }
 
 :root {
-    --back-color: #940202;
-    --back-color-dark: #880202;
-    --back-color-darker: #610101;
+	--back-color: #940202;
+	--back-color-dark: #880202;
+	--back-color-darker: #610101;
 
-    --card-color: black;
-    --card-color-lighter: #212121;
-    --card-color-light: #0a0a0a;
-    --card-shadow: 2px 2px 16px 8px rgba(0, 0, 0, 0.5);
-    --card-border-gray: 1px solid #afafaf;
-    --card-border-red: 1px solid var(--back-color-dark);
+	--card-color: black;
+	--card-color-lighter: #212121;
+	--card-color-light: #0a0a0a;
+	--card-shadow: 2px 2px 16px 8px rgba(0, 0, 0, 0.5);
+	--card-border-gray: 1px solid #afafaf;
+	--card-border-red: 1px solid var(--back-color-darker);
 
-    --text-color: white;
-    --sender-color: #c62828;
-    --receiver-color: #388e3c;
+	--text-color: white;
+	--sender-color: #c62828;
+	--receiver-color: #388e3c;
 }
 
 body {
-    background-color: var(--back-color-dark);
-    font-family: 'Poppins', sans-serif;
-    color: var(--text-color);
+	background-color: var(--back-color-dark);
+	font-family: "Poppins", sans-serif;
+	color: var(--text-color);
 }

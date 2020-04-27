@@ -22,25 +22,7 @@ const uniqid = require("uniqid");
 
 const frontend = path.join(__dirname, process.env.FRONTEND);
 
-var Rooms = [
-	{
-		title: "hello world",
-		id: "abcd",
-		viewers: 0,
-		video: {
-			title: "WOW",
-			src: "/sample.mkv",
-			size: "501MB",
-			time: "10:51",
-		},
-		users: [
-			{
-				name: "QWE47Y",
-				id: "1234",
-			},
-		],
-	},
-];
+var Rooms = [];
 
 function getCookies(strCookies) {
 	var cookies = strCookies.split(";");
@@ -66,7 +48,7 @@ app.set("views", path.join(frontend, "/html"));
 app.use(morgan("short"));
 
 app.use((req, res, next) => {
-	//res.set("Cache-Control", "public, max-age=600");
+	res.set("Cache-Control", "public, max-age= 60 * 10");
 	next();
 });
 

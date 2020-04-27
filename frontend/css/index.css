@@ -1,101 +1,104 @@
 body {
-    position: relative;
-    display: flex;
-    width: 100%;
-    height: 100vh;
-    justify-content: space-evenly;
-    align-items: center;
+	position: relative;
+	display: flex;
+	width: 100%;
+	height: 100vh;
+	justify-content: space-evenly;
+	align-items: center;
 }
 
 .container {
-    width: 500px;
-    height: 400px;
-    box-shadow: var(--card-shadow);
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--card-color);
+	width: 500px;
+	height: 400px;
+	box-shadow: var(--card-shadow);
+	border-radius: 8px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background-color: var(--card-color);
 }
 
-
 input {
-    margin: 8px;
-    background-color: var(--card-color-lighter);
-    border: none;
-    outline: none;
-    color: white;
-    padding: 0px 20px;
-    border-radius: 24px;
-    font-family: 'Poppins', sans-serif;
-    height: 48px;
-    width: 320px;
+	margin: 8px;
+	background-color: var(--card-color-lighter);
+	border: none;
+	outline: none;
+	color: white;
+	padding: 0px 20px;
+	border-radius: 24px;
+	font-family: "Poppins", sans-serif;
+	height: 48px;
+	width: 320px;
 }
 
 .btn-container {
-    margin-top: 48px;
+	margin-top: 48px;
 }
 
 a {
-    text-transform: uppercase;
-    text-decoration: none;
-    margin: 4px;
-    border: var(--card-border-gray);
-    border-radius: 8px;
-    padding: 1em 1.15em;
-    word-spacing: 2px;
-    letter-spacing: 1px;
-    color: var(--text-color);
+	text-transform: uppercase;
+	text-decoration: none;
+	margin: 4px;
+	border: var(--card-border-gray);
+	border-radius: 8px;
+	padding: 1em 1.15em;
+	word-spacing: 2px;
+	letter-spacing: 1px;
+	color: var(--text-color);
 }
 
 a:hover {
-    background-color: var(--back-color-darker);
+	background-color: var(--back-color-darker);
 }
 
 .or-text {
-    font-size: 36px;
-    letter-spacing: 4px;
+	font-size: 36px;
+	letter-spacing: 4px;
 }
 
 #snackbar {
-    position: fixed;
-    text-align: center;
+	position: fixed;
+	text-align: center;
 
-    padding: 1em 2em;
-    background-color: var(--card-color);
-    box-shadow: var(--card-shadow);
-    border-radius: 6px;
-    font-size: 18px;
+	padding: 1em 2em;
+	background-color: var(--card-color);
+	box-shadow: var(--card-shadow);
+	border-radius: 6px;
+	font-size: 18px;
 
-    bottom: -40px;
+	bottom: -40px;
 
-    visibility: hidden;
-    opacity: 0;
-    transition: ease-in-out 250ms;
+	visibility: hidden;
+	opacity: 0;
+	transition: ease-in-out 250ms;
 }
 
 #snacktext {
-    width: 100%;
-    text-align: left;
-    font-family: var(--font-ox);
+	width: 100%;
+	text-align: left;
+	font-family: var(--font-ox);
 }
 
-
-
 @media (max-width: 1024px) {
-    body {
-        height: auto;
-        flex-direction: column;
-        overflow: visible;
-    }
+	body {
+		height: auto;
+		flex-direction: column;
+		overflow: visible;
+	}
 
-    .container {
-        margin: 32px 0px;
-    }
+	.container {
+		margin: 32px 0px;
+	}
 
-    .fas {
-        top: 48px;
-        right: 40px;
-    }
+	.fas {
+		top: 48px;
+		right: 40px;
+	}
+}
+
+@media (max-width: 500px) {
+	.container {
+		width: 100%;
+	}
 }
