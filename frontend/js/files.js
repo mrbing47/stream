@@ -35,11 +35,15 @@ for (const card of videoCards) {
 		const cardType = card.classList[1];
 
 		const url = new URL("/" + card.classList[1], window.location.origin);
-
-		url.search = new URLSearchParams({
+		const currUrlParams = new URLSearchParams(window.location.search);
+		const newUrlParams = new URLSearchParams({
 			path: container[0].id,
 			folder: card.id,
 		});
+
+		if (currUrlParams.get("sort")) newUrlParams.set("sort", currUrlParams.get("sort"));
+
+		url.search = newUrlParams;
 
 		if (cardType === "file") {
 			setCookie("video", {
