@@ -8,6 +8,9 @@
 
 		<link rel="stylesheet" href="/css/room.css" type="text/css" />
 		<link rel="stylesheet" href="/css/global.css" />
+
+		<link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon" />
+
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js"></script>
 		<script defer src="/js/cookieFn.js"></script>
 		<script defer src="/js/room.js"></script>
@@ -20,8 +23,9 @@
 	<body>
 		<div class="video-container" id="<%= usertype %> ">
 			<video id="video"
-			<% if (usertype === "leader") { %> controls <% } %>
-			>
+			<% if (usertype === "leader") { %> 
+				controls 
+			<% } %>>
 				<source src="<%= video.src %>" type="video/mp4" id="video-source" />
 			</video>
 			<div class="video-details">
