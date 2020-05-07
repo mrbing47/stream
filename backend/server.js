@@ -305,10 +305,8 @@ app.get("/folder", (req, res) => {
 	}
 
 	if (req.query.sort) {
-		if (req.query.sort) {
-			if (req.query.sort === "latest") result = result.sort((a, b) => b.birthtime - a.birthtime);
-			if (req.query.sort === "oldest") result = result.sort((a, b) => a.birthtime - b.birthtime);
-		}
+		if (req.query.sort === "latest") result = result.sort((a, b) => b.birthtime - a.birthtime);
+		if (req.query.sort === "oldest") result = result.sort((a, b) => a.birthtime - b.birthtime);
 	}
 
 	const encryptPath = script.encryptPath(pathReq);

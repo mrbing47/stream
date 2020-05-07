@@ -107,11 +107,12 @@ async function getFiles(folderPath, copyJson) {
 								};
 
 								if (isTn) {
-									new FFmpeg(filePath).screenshot({
-										timemarks: ["20%"],
-										filename: "%b",
-										folder: tnPath,
-									});
+									if (!fs.existsSync(path.join(tnPath, fileTitle + ".png")))
+										new FFmpeg(filePath).screenshot({
+											timemarks: ["20%"],
+											filename: "%b",
+											folder: tnPath,
+										});
 								}
 								newEntry = true;
 
