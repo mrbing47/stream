@@ -41,15 +41,7 @@
 			>
 				<div class="video-img">
 					<% if (file.tn) { %>
-					<div
-						class="video-tn"
-						style="
-							background: url('<%= `/tn/${file.title}.png`%>');
-							background-size: contain;
-							background-repeat: no-repeat;
-							background-position: center;
-						"
-					></div>
+					<img src="<%=`/tn/${file.title}.png`%>" alt="<%= file.title %>" class="video-tn" loading="lazy" />
 					<% } else {%>
 					<i class="fas fa-film fa-6x"></i>
 					<% } %>
