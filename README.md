@@ -26,7 +26,7 @@ Follow below steps in **order** to setup project:
 
 ## _.env_ Setup
 
-You need to add `.env` (dotenv) file to `/backend` folder, variables you need to setup:
+You need to add _`.env`_ (dotenv) file to `/backend` folder, variables you need to setup:
 
 ```
 ROOT=path/to/your/content
@@ -56,7 +56,7 @@ cd /d "path/to/project/root"
 
 This files allows the user to start the server from **Command Prompt** and start the server from any place on any directory. Following are the ways to pass **arguments** to the file:
 
-1. Nothing, this will open the file in **current** directory like:
+1. Nothing, this will open the file in **current** directory with the **default** port number in _`.env`_ file or in the _`server.js`_ file:
 
 ```
 path/to/your/content> stream
@@ -68,7 +68,19 @@ path/to/your/content> stream
 some/random/directory> stream "path/to/your/content"
 ```
 
-This way, user don't have to hard code `ROOT` in `.env` file
+3. Pass the **PORT** as an argument like:
+
+```
+some/random/directory> stream 1234
+```
+
+4. Pass the **path** and **PORT** both as arguments like:
+
+```
+some/random/directory> stream "path/to/your/content" 1234
+```
+
+This way, user don't have to hard code `ROOT` and `PORT` in _`.env`_ file
 
 _**PS**: NEVER LEARN BATCH_
 
