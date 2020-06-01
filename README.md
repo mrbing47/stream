@@ -39,7 +39,7 @@ FRONTEND=../frontend
 SECRET_KEY=string_for_encryption
 ```
 
-Here you need to change `ROOT` and `SECRET_KEY` variables and specify a value or `SORT`. <br>
+Here you need to change `ROOT` and `SECRET_KEY` variables. <br>
 
 > What is `SECRET_KEY`?<br>
 > For the key, when you pass a string, it's treated as a passphrase and used to derive an actual key and IV. Or you can pass a WordArray that represents the actual key. If you pass the actual key, you must also pass the actual IV.
@@ -54,7 +54,7 @@ Edit `stream.cmd` and add the root path of the project, ie path to `package.json
 cd /d "path/to/project/root"
 ```
 
-This files allows the user to start the server from **Command Prompt** and start the server from any place on any directory. Following are the ways to pass **arguments** to the file:
+This files allows the user to start the server any place on any directory using **Command Prompt**. Following are the ways to pass **arguments** to the file:
 
 1. Nothing, this will open the file in **current** directory with the **default** port number in _`.env`_ file or in the _`server.js`_ file:
 
