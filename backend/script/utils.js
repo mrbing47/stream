@@ -15,7 +15,7 @@ const FFmpeg = require("fluent-ffmpeg");
 
 const CryptoJS = require("crypto-js");
 
-const supportedExt = ["mp4", "mkv", "m4v"];
+const supportedExt = ["mp4", "mkv", "m4v", "avi"];
 
 var isTn = true;
 
@@ -57,8 +57,6 @@ async function getFiles(folderPath, copyJson) {
 						}
 					} else {
 						const { filesInside, hasChanged } = await getFiles(filePath, copyJson[fileIx].files);
-
-						console.log(copyJson[fileIx].title, "=> ", hasChanged);
 
 						if (hasChanged) {
 							copyJson[fileIx].files = filesInside.sort((a, b) =>

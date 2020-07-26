@@ -7,7 +7,7 @@ const http = require("http").createServer(app);
 const io = require("socket.io").listen(http);
 
 const morgan = require("morgan");
-const script = require("./script/script.js");
+const utils = require("./script/utils.js");
 const session = require("express-session")({
 	secret: process.env.SECRET_KEY,
 	resave: true,
@@ -192,7 +192,7 @@ app.get("/file", (req, res) => {
 		return;
 	}
 
-	const decryptPath = script.decryptPath(req.query.path).trim();
+	const decryptPath = utils.decryptPath(req.query.path).trim();
 	console.log("query-path =>", decryptPath);
 
 	const fileParts = req.query.folder.split(".");
@@ -201,7 +201,7 @@ app.get("/file", (req, res) => {
 
 	const pathReq = path.join(decryptPath, fileTitle).trim();
 
-	const result = script.iterateDir(videoDetails, pathReq, fileExt);
+	const result = utils.iterateDir(videoDetails, pathReq, fileExt);
 
 	if (result == 404) {
 		res.status(404).send("Wrong Video!!!");
@@ -275,7 +275,7 @@ app.get("/file", (req, res) => {
 
 app.get("/folder", (req, res) => {
 	if (!req.query.path && !req.query.folder) {
-		const encryptPath = script.encryptPath("root");
+		const encryptPath = utils.encryptPath("root");
 
 		if (videoDetails) {
 			var sorted = [...videoDetails];
@@ -294,10 +294,10 @@ app.get("/folder", (req, res) => {
 		return;
 	}
 
-	const decryptPath = script.decryptPath(req.query.path);
+	const decryptPath = utils.decryptPath(req.query.path);
 	const pathReq = path.join(decryptPath, req.query.folder).trim();
 
-	var result = script.iterateDir(videoDetails, pathReq);
+	var result = utils.iterateDir(videoDetails, pathReq);
 
 	if (result == 404 || Object.prototype.toString.call(result) != "[object Array]") {
 		res.status(404).send("Wrong Path!!!");
@@ -309,7 +309,7 @@ app.get("/folder", (req, res) => {
 		if (req.query.sort === "oldest") result = result.sort((a, b) => a.birthtime - b.birthtime);
 	}
 
-	const encryptPath = script.encryptPath(pathReq);
+	const encryptPath = utils.encryptPath(pathReq);
 	res.render("files", { data: result, path: encryptPath });
 });
 
@@ -404,7 +404,7 @@ const PORT = process.env.PORT || 4769;
 
 const updateAndListen = async function () {
 	try {
-		videoDetails = await script.updateDetails();
+		videoDetails = await utils.updateDetails();
 	} catch (err) {
 		console.log(err);
 	}
