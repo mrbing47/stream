@@ -26,7 +26,7 @@ Follow below steps in **order** to setup project:
 
 ## _.env_ Setup
 
-You need to add _`.env`_ (dotenv) file to `/backend` folder, variables you need to setup:
+You need to add _`.env`_ (dotenv) file to `/backend` folder. Variables you need to add to the file:
 
 ```
 ROOT=path/to/your/content

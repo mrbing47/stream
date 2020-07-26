@@ -1,0 +1,10 @@
+ROOT=path/to/your/content
+TN=${ROOT}\tn
+JSON_PATH=${ROOT}\json
+JSON_FILE=${ROOT}\json\details.json
+
+FRONTEND=../frontend
+
+PORT=3000
+
+SECRET_KEY=string_for_encryption
