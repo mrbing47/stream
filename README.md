@@ -39,6 +39,8 @@ FRONTEND=../frontend
 SECRET_KEY=string_for_encryption
 ```
 
+There's also a _`.sample-env`_, rename it to _`.env`_ and change variables accordingly.
+
 Here you need to change `ROOT` and `SECRET_KEY` variables. <br>
 
 > What is `SECRET_KEY`?<br>
