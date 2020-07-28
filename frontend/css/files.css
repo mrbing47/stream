@@ -116,6 +116,7 @@
 	font-size: 16px;
 	line-height: 1.5em;
 	padding: 0px 12px;
+	margin-top: 6px;
 	overflow: hidden;
 	word-wrap: break-word;
 }
@@ -124,12 +125,12 @@
 	grid-row: 2 / span 1;
 	grid-column: 1 / span 1;
 	text-align: start;
-	padding: 12px 24px;
+	margin: 12px 24px 6px;
 	font-size: 12px;
 }
 
 .video-duration {
-	padding: 12px 24px;
+	margin: 12px 24px 6px;
 	grid-row: 2 / span 1;
 	grid-column: 2 / span 1;
 	text-align: end;
