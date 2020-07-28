@@ -48,7 +48,7 @@ app.set("views", path.join(frontend, "/html"));
 app.use(morgan("short"));
 
 app.use((req, res, next) => {
-	res.set("Cache-Control", "public, max-age= 60 * 10");
+	//res.set("Cache-Control", "public, max-age= 60 * 10");
 	next();
 });
 

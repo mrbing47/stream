@@ -76,7 +76,7 @@
 	background-color: var(--card-color);
 	box-shadow: var(--card-shadow);
 	display: flex;
-	height: 260px;
+	height: 280px;
 	flex-direction: column;
 	border-radius: 8px;
 	overflow: hidden;
@@ -134,4 +134,17 @@
 	grid-column: 2 / span 1;
 	text-align: end;
 	font-size: 12px;
+}
+
+.video-date {
+	grid-row: 3 / span 1;
+	grid-column: 1 / span 2;
+	text-align: start;
+	font-size: 12px;
+	padding: 0px 24px 0px;
+}
+
+.folder-date {
+	text-align: end;
+	font-size: 16px;
 }

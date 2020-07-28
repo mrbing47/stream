@@ -44,12 +44,14 @@ async function getFiles(folderPath, copyJson) {
 						const { filesInside } = await getFiles(filePath, []);
 
 						if (filesInside.length != 0) {
+							const folderDate = new Date(fileStats.birthtimeMs).toDateString().split(" ");
 							const folderDetails = {
 								type: "folder",
 								title: files[i],
+								birthtime: fileStats.birthtimeMs,
+								date: folderDate[2] + " " + folderDate[1] + " " + folderDate[3],
 								path: folderPath,
 								files: filesInside,
-								birthtime: fileStats.birthtimeMs,
 							};
 
 							newEntry = true;
@@ -93,6 +95,7 @@ async function getFiles(folderPath, copyJson) {
 									videoSec = "0" + videoSec;
 								}
 
+								const fileDate = new Date(fileStats.birthtimeMs).toDateString().split(" ");
 								var videoDetails = {
 									type: "file",
 									title: fileTitle,
@@ -100,6 +103,7 @@ async function getFiles(folderPath, copyJson) {
 									duration: videoMins + ":" + videoSec,
 									size: parseInt(parseInt(video.format.size) / (1024 * 1024)),
 									birthtime: fileStats.birthtimeMs,
+									date: fileDate[2] + " " + fileDate[1] + " " + fileDate[3],
 									tn: isTn,
 									path: folderPath,
 								};
