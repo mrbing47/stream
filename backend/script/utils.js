@@ -137,6 +137,8 @@ async function getFiles(folderPath, copyJson) {
 }
 
 async function updateDetails() {
+	console.log(process.env.ROOT);
+
 	if (!fs.existsSync(jsonPath))
 		fs.mkdirSync(jsonPath, (err) => {
 			throw err;
