@@ -21,14 +21,20 @@ It has features like:
 ### Watch Personally
 
 ![Watch Peronally](https://raw.githubusercontent.com/mrbing47/Stream-Video/master/assets/watch-personal.png)
+<br>
+<br>
 
 ### Room
 
 ![Room](https://raw.githubusercontent.com/mrbing47/Stream-Video/master/assets/room.png)
+<br>
+<br>
 
 ### Real-Time Chat and Sync Playback
 
 ![Sync Playback and Real-Time Chat](https://raw.githubusercontent.com/mrbing47/Stream-Video/master/assets/stream-video-room.gif)
+
+---
 
 ## Project Setup
 
