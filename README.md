@@ -10,7 +10,25 @@ It has features like:
 -   Controls of the video will be controled by the Leader (one who created the room by default).
 -   Real-time messaging in the Room so everyone can share their thoughts.
 
----
+<br>
+
+### Main Page
+
+![Main Page](https://raw.githubusercontent.com/mrbing47/Stream-Video/master/assets/index.png)
+<br>
+<br>
+
+### Watch Personally
+
+![Watch Peronally](https://raw.githubusercontent.com/mrbing47/Stream-Video/master/assets/watch-personal.png)
+
+### Room
+
+![Room](https://raw.githubusercontent.com/mrbing47/Stream-Video/master/assets/room.png)
+
+### Real-Time Chat and Sync Playback
+
+![Sync Playback and Real-Time Chat](https://raw.githubusercontent.com/mrbing47/Stream-Video/master/assets/stream-video-room.gif)
 
 ## Project Setup
 
