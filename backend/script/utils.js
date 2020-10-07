@@ -15,6 +15,8 @@ const FFmpeg = require("fluent-ffmpeg");
 
 const CryptoJS = require("crypto-js");
 
+const { networkInterfaces } = require("os");
+
 const supportedExt = ["mp4", "mkv", "m4v", "avi"];
 
 var isTn = true;
@@ -213,9 +215,30 @@ function iterateDir(videoDetails, pathReq, fileExt) {
 	return currFolder;
 }
 
+function getIP() {
+	const nets = networkInterfaces();
+	const results = Object.create(null); // or just '{}', an empty object
+
+	for (const name of Object.keys(nets)) {
+		for (const net of nets[name]) {
+			// skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
+			if (net.family === "IPv4" && !net.internal) {
+				if (!results[name]) {
+					results[name] = [];
+				}
+
+				results[name].push(net.address);
+			}
+		}
+	}
+
+	return results;
+}
+
 module.exports = {
 	updateDetails,
 	encryptPath,
 	decryptPath,
 	iterateDir,
+	getIP,
 };

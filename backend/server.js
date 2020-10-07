@@ -405,10 +405,18 @@ const PORT = process.env.PORT || 4769;
 const updateAndListen = async function () {
 	try {
 		videoDetails = await utils.updateDetails();
+		console.log("\nListening to PORT => " + PORT);
+
+		const IPs = utils.getIP();
+		console.log(`\nUse these IPs to connect over with PORT ${PORT} :`);
+		for (let i in IPs) {
+			console.log(i, "=>", IPs[i]);
+		}
+		console.log("\n\n\n");
 	} catch (err) {
 		console.log(err);
+		process.exit();
 	}
-	console.log("Listening to PORT => " + PORT);
 };
 
 http.listen(PORT, updateAndListen);
