@@ -235,10 +235,17 @@ function getIP() {
 	return results;
 }
 
+function openBrowser() {
+	var url = "http://localhost:" + PORT;
+	var start = process.platform == "darwin" ? "open" : process.platform == "win32" ? "start" : "xdg-open";
+	require("child_process").exec(start + " " + url);
+}
+
 module.exports = {
 	updateDetails,
 	encryptPath,
 	decryptPath,
 	iterateDir,
 	getIP,
+	openBrowser,
 };

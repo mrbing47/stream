@@ -413,9 +413,7 @@ const updateAndListen = async function () {
 			console.log(i, "=>", IPs[i]);
 		}
 
-		var url = "http://localhost:" + PORT;
-		var start = process.platform == "darwin" ? "open" : process.platform == "win32" ? "start" : "xdg-open";
-		require("child_process").exec(start + " " + url);
+		utils.openBrowser();
 		console.log("\n\n\n");
 	} catch (err) {
 		console.log(err);
