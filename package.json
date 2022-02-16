@@ -22,7 +22,7 @@
 		"ffprobe-client": "^1.1.6",
 		"fluent-ffmpeg": "^2.1.2",
 		"morgan": "^1.10.0",
-		"socket.io": "^2.4.0",
+		"socket.io": "^4.4.1",
 		"socket.io-cookie-parser": "^1.0.0",
 		"uniqid": "^5.2.0"
 	}
