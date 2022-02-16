@@ -1,5 +1,4 @@
 @echo off
-setlocal
 title Stream Video
 
 

@@ -4,7 +4,7 @@ const fs = require("fs");
 const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
-const io = require("socket.io").listen(http);
+const io = require("socket.io")(http);
 
 const morgan = require("morgan");
 const utils = require("./script/utils.js");
@@ -395,7 +395,12 @@ io.on("connection", (socket) => {
 			roomObj.viewers--;
 		}
 		socket.to(roomid).broadcast.emit("user-leave", username);
-		socket.handshake.session.insideRoom = socket.handshake.session.username = socket.handshake.session.usertype = socket.handshake.session.roomid = socket.handshake.session.userid = undefined;
+		socket.handshake.session.insideRoom =
+			socket.handshake.session.username =
+			socket.handshake.session.usertype =
+			socket.handshake.session.roomid =
+			socket.handshake.session.userid =
+				undefined;
 		socket.handshake.session.save();
 	});
 });
@@ -413,7 +418,7 @@ const updateAndListen = async function () {
 			console.log(i, "=>", IPs[i]);
 		}
 
-		utils.openBrowser();
+		utils.openBrowser(PORT);
 		console.log("\n\n\n");
 	} catch (err) {
 		console.log(err);
