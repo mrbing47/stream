@@ -1,13 +1,18 @@
 const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
-
-const dotenv = require("dotenv").config({ path: path.join(__dirname, "../.env") });
+const chalk = require("chalk");
+const Store = require("./search/index");
+let store;
+const dotenv = require("dotenv").config({
+	path: path.join(__dirname, "../.env"),
+});
 const expand = require("dotenv-expand");
 expand(dotenv);
 
 const jsonPath = process.env.JSON_PATH.toString().trim();
-const jsonFile = process.env.JSON_FILE.toString().trim();
+const dataFile = process.env.DATA_FILE.toString().trim();
+const tokensFile = process.env.TOKENS_FILE.toString().trim();
 const tnPath = process.env.TN;
 
 const ffprobe = require("ffprobe-client");
@@ -17,7 +22,8 @@ const CryptoJS = require("crypto-js");
 
 const { networkInterfaces } = require("os");
 
-const supportedExt = ["mp4", "mkv", "m4v", "avi"];
+const supportedExt = ["mp4", "mkv", "m4v", "avi", "vtt"];
+const ignoreFiles = ["tn", "details"];
 
 var isTn = true;
 
@@ -28,6 +34,18 @@ async function getFiles(folderPath, copyJson) {
 		const files = await fsp.readdir(folderPath);
 
 		for (const i in files) {
+			if (
+				ignoreFiles.some((filename) => {
+					return (
+						filename.localeCompare(files[i], "en", {
+							sensitivity: "base",
+						}) == 0
+					);
+				})
+			) {
+				continue;
+			}
+
 			const filePath = path.join(folderPath, files[i]);
 
 			try {
@@ -35,23 +53,42 @@ async function getFiles(folderPath, copyJson) {
 
 				const fileIx = copyJson.findIndex((e) => {
 					if (e) {
-						if (e.type === "folder") return e.title === files[i];
-						else return e.title + "." + e.extension === files[i];
+						if (e.type === "folder")
+							return e.title === files[i];
+						else
+							return (
+								e.title + "." + e.extension === files[i]
+							);
 					}
 				});
 
 				if (fileStats.isDirectory()) {
 					if (fileIx == -1) {
-						console.log("FOLDER => " + files[i]);
-						const { filesInside } = await getFiles(filePath, []);
+						console.log(
+							"\n\nFOLDER => " +
+								chalk.yellow.bold(files[i])
+						);
+						const { filesInside } = await getFiles(
+							filePath,
+							[]
+						);
 
 						if (filesInside.length != 0) {
-							const folderDate = new Date(fileStats.birthtimeMs).toDateString().split(" ");
+							const folderDate = new Date(
+								fileStats.birthtimeMs
+							)
+								.toDateString()
+								.split(" ");
 							const folderDetails = {
 								type: "folder",
 								title: files[i],
 								birthtime: fileStats.birthtimeMs,
-								date: folderDate[2] + " " + folderDate[1] + " " + folderDate[3],
+								date:
+									folderDate[2] +
+									" " +
+									folderDate[1] +
+									" " +
+									folderDate[3],
 								path: folderPath,
 								files: filesInside,
 							};
@@ -60,13 +97,22 @@ async function getFiles(folderPath, copyJson) {
 							copyJson.push(folderDetails);
 						}
 					} else {
-						const { filesInside, hasChanged } = await getFiles(filePath, copyJson[fileIx].files);
+						const { filesInside, hasChanged } =
+							await getFiles(
+								filePath,
+								copyJson[fileIx].files
+							);
 
 						if (hasChanged) {
-							copyJson[fileIx].files = filesInside.sort((a, b) =>
-								a.title.localeCompare(b.title, "en", {
-									sensitivity: "base",
-								})
+							copyJson[fileIx].files = filesInside.sort(
+								(a, b) =>
+									a.title.localeCompare(
+										b.title,
+										"en",
+										{
+											sensitivity: "base",
+										}
+									)
 							);
 							newEntry = hasChanged;
 						}
@@ -75,7 +121,9 @@ async function getFiles(folderPath, copyJson) {
 				if (fileStats.isFile()) {
 					if (fileIx == -1) {
 						const fileParts = files[i].split(".");
-						const fileTitle = [...fileParts.slice(0, -1)].join(".");
+						const fileTitle = [
+							...fileParts.slice(0, -1),
+						].join(".");
 						const fileExt = fileParts.slice(-1)[0];
 
 						if (
@@ -87,36 +135,68 @@ async function getFiles(folderPath, copyJson) {
 								);
 							})
 						) {
-							console.log("FILE => " + files[i]);
+							console.log(
+								"FILE => " + chalk.green.bold(files[i])
+							);
 							try {
 								const video = await ffprobe(filePath);
 
-								const videoMins = "" + parseInt(parseInt(video.format.duration) / 60);
-								var videoSec = parseInt(video.format.duration) % 60;
+								const videoMins =
+									"" +
+									parseInt(
+										parseInt(
+											video.format.duration
+										) / 60
+									);
+								var videoSec =
+									parseInt(video.format.duration) %
+									60;
 								if (videoSec < 10) {
 									videoSec = "0" + videoSec;
 								}
 
-								const fileDate = new Date(fileStats.birthtimeMs).toDateString().split(" ");
+								const fileDate = new Date(
+									fileStats.birthtimeMs
+								)
+									.toDateString()
+									.split(" ");
 								var videoDetails = {
 									type: "file",
 									title: fileTitle,
 									extension: fileExt,
-									duration: videoMins + ":" + videoSec,
-									size: parseInt(parseInt(video.format.size) / (1024 * 1024)),
+									duration:
+										videoMins + ":" + videoSec,
+									size: parseInt(
+										parseInt(video.format.size) /
+											(1024 * 1024)
+									),
 									birthtime: fileStats.birthtimeMs,
-									date: fileDate[2] + " " + fileDate[1] + " " + fileDate[3],
+									date:
+										fileDate[2] +
+										" " +
+										fileDate[1] +
+										" " +
+										fileDate[3],
 									tn: isTn,
 									path: folderPath,
 								};
 
 								if (isTn) {
-									if (!fs.existsSync(path.join(tnPath, fileTitle + ".png")))
-										new FFmpeg(filePath).screenshot({
-											timemarks: ["20%"],
-											filename: "%b",
-											folder: tnPath,
-										});
+									if (
+										!fs.existsSync(
+											path.join(
+												tnPath,
+												fileTitle + ".png"
+											)
+										)
+									)
+										new FFmpeg(filePath).screenshot(
+											{
+												timemarks: ["20%"],
+												filename: "%b",
+												folder: tnPath,
+											}
+										);
 								}
 								newEntry = true;
 
@@ -124,6 +204,10 @@ async function getFiles(folderPath, copyJson) {
 							} catch (err) {
 								console.log(err);
 							}
+						} else {
+							console.log(
+								"FILE => " + chalk.red.bold(files[i])
+							);
 						}
 					}
 				}
@@ -138,6 +222,20 @@ async function getFiles(folderPath, copyJson) {
 	return { filesInside: copyJson, hasChanged: newEntry };
 }
 
+function flattenArr(arr) {
+	let res = [];
+	for (let i of arr) {
+		if (i.type === "file") {
+			res.push(i);
+		} else {
+			let { files, ...obj } = i;
+			res.push({ ...obj });
+			res = [...res, ...flattenArr(i.files)];
+		}
+	}
+	return res;
+}
+
 async function updateDetails() {
 	console.log(process.env.ROOT);
 
@@ -147,12 +245,24 @@ async function updateDetails() {
 		});
 	if (!fs.existsSync(tnPath)) isTn = false;
 
-	var json = [];
-	var inputJson = "";
-	if (fs.existsSync(jsonFile)) {
-		inputJson = await fsp.readFile(jsonFile);
+	let json = [];
+	let inputJson = "";
+
+	if (fs.existsSync(dataFile)) {
+		inputJson = await fsp.readFile(dataFile);
 		try {
 			json = JSON.parse(inputJson);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	let tokens = {};
+	if (fs.existsSync(tokensFile)) {
+		try {
+			let inputTokens = await fsp.readFile(tokensFile);
+			tokens = JSON.parse(inputTokens);
+			store = new Store({ cb: (ele) => ele.title, tokens });
 		} catch (err) {
 			console.log(err);
 		}
@@ -161,7 +271,7 @@ async function updateDetails() {
 	const data = await getFiles(process.env.ROOT, json);
 	const updatedJson = JSON.stringify(data.filesInside);
 
-	var output = data.filesInside;
+	let output = data.filesInside;
 
 	if (inputJson != updatedJson) {
 		output = output.sort((a, b) =>
@@ -170,15 +280,26 @@ async function updateDetails() {
 			})
 		);
 
-		fs.writeFile(jsonFile, JSON.stringify(output), (err) => {
+		fs.writeFile(dataFile, JSON.stringify(output), (err) => {
 			if (err) console.log(err);
-			else console.log("Write was successful");
+			else console.log("DATA Write was successfull.");
 		});
+		flatarr = flattenArr(output);
+		store = new Store({ cb: (ele) => ele.title });
+		store.tokenize(flatarr);
+		fs.writeFile(
+			tokensFile,
+			JSON.stringify(store.tokens),
+			(err) => {
+				if (err) console.log(err);
+				else console.log("TOKENS Write was successfull.");
+			}
+		);
 	} else {
 		console.log("No Updates!!");
 	}
 
-	return output;
+	return [output, store];
 }
 
 function encryptPath(path) {
@@ -197,11 +318,18 @@ function decryptPath(path) {
 
 function iterateDir(videoDetails, pathReq, fileExt) {
 	fileExt = fileExt || "";
-	const pathArr = pathReq.split("\\").length == 1 ? pathReq.split("/") : pathReq.split("\\");
+	const pathArr =
+		pathReq.split("\\").length == 1
+			? pathReq.split("/")
+			: pathReq.split("\\");
 	var currFolder = videoDetails;
 
 	for (var ix = 1; ix < pathArr.length; ix++) {
-		const fileObj = currFolder.find((e) => e.title === pathArr[ix] && (e.extension ? e.extension === fileExt : true));
+		const fileObj = currFolder.find(
+			(e) =>
+				e.title === pathArr[ix] &&
+				(e.extension ? e.extension === fileExt : true)
+		);
 
 		if (!fileObj) return 404;
 
@@ -237,7 +365,12 @@ function getIP() {
 
 function openBrowser(PORT) {
 	var url = "http://localhost:" + PORT;
-	var start = process.platform == "darwin" ? "open" : process.platform == "win32" ? "start" : "xdg-open";
+	var start =
+		process.platform == "darwin"
+			? "open"
+			: process.platform == "win32"
+			? "start"
+			: "xdg-open";
 	require("child_process").exec(start + " " + url);
 }
 

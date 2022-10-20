@@ -5,9 +5,9 @@ const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
-
 const morgan = require("morgan");
 const utils = require("./script/utils.js");
+
 const session = require("express-session")({
 	secret: process.env.SECRET_KEY,
 	resave: true,
@@ -19,10 +19,9 @@ const session = require("express-session")({
 const socketSession = require("express-socket.io-session");
 const cookieParser = require("cookie-parser");
 const uniqid = require("uniqid");
-
 const frontend = path.join(__dirname, process.env.FRONTEND);
-
-var Rooms = [];
+let Rooms = [];
+let store = undefined;
 
 function getCookies(strCookies) {
 	var cookies = strCookies.split(";");
@@ -36,7 +35,9 @@ function getCookies(strCookies) {
 			if (j != 0) cookieValue += cookie[j] + "=";
 		}
 
-		result[decodeURIComponent(cookie[0])] = cookieValue.slice(0, -1).trim();
+		result[decodeURIComponent(cookie[0])] = cookieValue
+			.slice(0, -1)
+			.trim();
 	}
 
 	return result;
@@ -86,7 +87,9 @@ app.post("/login", (req, res) => {
 
 	if (req.body.usertype) {
 		if (req.body.usertype === "member") {
-			const roomIx = Rooms.findIndex((value) => value.id === req.body.room);
+			const roomIx = Rooms.findIndex(
+				(value) => value.id === req.body.room
+			);
 			if (roomIx > -1) {
 				const newUser = {
 					name: req.body.username,
@@ -152,7 +155,9 @@ app.post("/login", (req, res) => {
 app.get("/room/:id", (req, res) => {
 	console.log(req.get("host"));
 
-	const roomIx = Rooms.findIndex((value) => value.id === req.params.id);
+	const roomIx = Rooms.findIndex(
+		(value) => value.id === req.params.id
+	);
 
 	if (roomIx == -1) {
 		res.send("Invalid Room Id!!!");
@@ -162,13 +167,16 @@ app.get("/room/:id", (req, res) => {
 	if (
 		!req.session.roomid ||
 		req.session.roomid !== req.params.id ||
-		!Rooms[roomIx].users.some((value) => value.id === req.session.userid)
+		!Rooms[roomIx].users.some(
+			(value) => value.id === req.session.userid
+		)
 	) {
-		console.log("if\n\n\n\n");
 		res.redirect("/?roomid=" + req.params.id);
 		return;
 	} else {
-		console.log("else\n\n\n\n");
+		let srt = Rooms[roomIx].video.src.split(".");
+		srt.pop();
+		srt = srt.join(".") + ".vtt";
 		const response = {
 			room: {
 				title: Rooms[roomIx].title,
@@ -178,9 +186,11 @@ app.get("/room/:id", (req, res) => {
 			video: {
 				...Rooms[roomIx].video,
 				src: Rooms[roomIx].video.src,
+				srt,
 			},
 			usertype: req.session.usertype,
 		};
+
 		req.session.insideRoom = true;
 		res.render("room", response);
 	}
@@ -208,11 +218,17 @@ app.get("/file", (req, res) => {
 		return;
 	}
 
-	const pathArr = pathReq.split("\\").length == 1 ? pathReq.split("/") : pathReq.split("\\");
+	const pathArr =
+		pathReq.split("\\").length == 1
+			? pathReq.split("/")
+			: pathReq.split("\\");
 	pathArr.shift();
 	let finalPath = path.join(...pathArr);
 
-	const filePath = path.join(process.env.ROOT, finalPath + "." + fileExt);
+	const filePath = path.join(
+		process.env.ROOT,
+		finalPath + "." + fileExt
+	);
 
 	var fileSize;
 
@@ -223,12 +239,19 @@ app.get("/file", (req, res) => {
 		return;
 	}
 
-	if (req.session.usertype === "leader" && !req.cookies.hasOwnProperty("watchmode")) {
-		const roomIx = Rooms.findIndex((value) => value.id === req.session.roomid);
+	if (
+		req.session.usertype === "leader" &&
+		!req.cookies.hasOwnProperty("watchmode")
+	) {
+		const roomIx = Rooms.findIndex(
+			(value) => value.id === req.session.roomid
+		);
 
 		if (
 			roomIx != -1 &&
-			Rooms[roomIx].users.some((value) => value.id === req.session.userid) &&
+			Rooms[roomIx].users.some(
+				(value) => value.id === req.session.userid
+			) &&
 			req.cookies.video &&
 			!req.session.insideRoom
 		) {
@@ -248,7 +271,12 @@ app.get("/file", (req, res) => {
 		const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
 		if (start >= fileSize) {
-			res.status(416).send("Requested range not satisfiable\n" + start + " >= " + fileSize);
+			res.status(416).send(
+				"Requested range not satisfiable\n" +
+					start +
+					" >= " +
+					fileSize
+			);
 			return;
 		}
 
@@ -273,16 +301,47 @@ app.get("/file", (req, res) => {
 	}
 });
 
+app.get("/search", (req, res) => {
+	console.log(req.query);
+	const query = req.query.q;
+	console.log(query);
+	let videos = store.search(query, 1);
+	console.log(req.query.sort);
+	if (req.query.sort) {
+		if (req.query.sort === "latest")
+			videos = videos.sort((a, b) => b.birthtime - a.birthtime);
+		if (req.query.sort === "oldest")
+			videos = videos.sort((a, b) => a.birthtime - b.birthtime);
+		if (req.query.sort === "alpha")
+			videos = videos.sort((a, b) =>
+				a.title.localeCompare(b.title, "en", {
+					sensitivity: "base",
+				})
+			);
+	}
+
+	res.render("files", {
+		data: videos,
+		path: utils.encryptPath("root"),
+		search: true,
+	});
+});
+
 app.get("/folder", (req, res) => {
 	if (!req.query.path && !req.query.folder) {
 		const encryptPath = utils.encryptPath("root");
 
 		if (videoDetails) {
 			var sorted = [...videoDetails];
-
 			if (req.query.sort) {
-				if (req.query.sort === "latest") sorted = sorted.sort((a, b) => b.birthtime - a.birthtime);
-				if (req.query.sort === "oldest") sorted = sorted.sort((a, b) => a.birthtime - b.birthtime);
+				if (req.query.sort === "latest")
+					sorted = sorted.sort(
+						(a, b) => b.birthtime - a.birthtime
+					);
+				if (req.query.sort === "oldest")
+					sorted = sorted.sort(
+						(a, b) => a.birthtime - b.birthtime
+					);
 			}
 
 			res.render("files", { data: sorted, path: encryptPath });
@@ -299,14 +358,19 @@ app.get("/folder", (req, res) => {
 
 	var result = utils.iterateDir(videoDetails, pathReq);
 
-	if (result == 404 || Object.prototype.toString.call(result) != "[object Array]") {
+	if (
+		result == 404 ||
+		Object.prototype.toString.call(result) != "[object Array]"
+	) {
 		res.status(404).send("Wrong Path!!!");
 		return;
 	}
 
 	if (req.query.sort) {
-		if (req.query.sort === "latest") result = result.sort((a, b) => b.birthtime - a.birthtime);
-		if (req.query.sort === "oldest") result = result.sort((a, b) => a.birthtime - b.birthtime);
+		if (req.query.sort === "latest")
+			result = result.sort((a, b) => b.birthtime - a.birthtime);
+		if (req.query.sort === "oldest")
+			result = result.sort((a, b) => a.birthtime - b.birthtime);
 	}
 
 	const encryptPath = utils.encryptPath(pathReq);
@@ -320,8 +384,11 @@ app.get("/tn/:tn", (req, res) => {
 			return;
 		}
 
-		if (data.includes(req.params.tn)) res.sendFile(path.join(process.env.TN, "/" + req.params.tn));
-		else res.status(404).send("INCORRECT id");
+		if (data.includes(req.params.tn))
+			res.sendFile(
+				path.join(process.env.TN, "/" + req.params.tn)
+			);
+		else res.status(404).send("Incorrect ID");
 	});
 });
 
@@ -341,34 +408,34 @@ io.on("connection", (socket) => {
 	socket.on("user-join", () => {
 		socket.join(roomid);
 
-		socket.to(roomid).broadcast.emit("user-join", username);
+		socket.to(roomid).emit("user-join", username);
 
 		const leaderId = roomObj.users[0].id;
-		socket.to(roomid).broadcast.emit("time-req", uid, leaderId);
+		socket.to(roomid).emit("time-req", uid, leaderId);
 
 		roomObj.viewers++;
 	});
 
 	socket.on("time-res", (isPaused, currentTime, uid) => {
-		socket.to(roomid).broadcast.emit("time-res", isPaused, currentTime, uid);
+		socket.to(roomid).emit("time-res", isPaused, currentTime, uid);
 	});
 
 	socket.on("message", (msg) => {
-		socket.to(roomid).broadcast.emit("message", username, msg);
+		socket.to(roomid).emit("message", username, msg);
 	});
 	socket.on("play", () => {
 		if (usertype === "leader") {
-			socket.to(roomid).broadcast.emit("play");
+			socket.to(roomid).emit("play");
 		}
 	});
 	socket.on("pause", () => {
 		if (usertype === "leader") {
-			socket.to(roomid).broadcast.emit("pause");
+			socket.to(roomid).emit("pause");
 		}
 	});
 	socket.on("seek", (time) => {
 		if (usertype === "leader") {
-			socket.to(roomid).broadcast.emit("seek", time);
+			socket.to(roomid).emit("seek", time);
 		}
 	});
 
@@ -379,22 +446,28 @@ io.on("connection", (socket) => {
 		console.log("disconnect\n\n");
 
 		socket.leave(roomid);
-		const userRoomIx = roomObj.users.findIndex((value) => value.id === uid);
+		const userRoomIx = roomObj.users.findIndex(
+			(value) => value.id === uid
+		);
 		if (usertype === "leader" && roomObj.users.length > 1) {
 			roomObj.users[userRoomIx + 1].type = "leader";
 			const newLeaderName = roomObj.users[userRoomIx + 1].name;
 			const newLeaderId = roomObj.users[userRoomIx + 1].id;
 
-			socket.to(roomid).broadcast.emit("new-leader", newLeaderName, newLeaderId);
+			socket
+				.to(roomid)
+				.emit("new-leader", newLeaderName, newLeaderId);
 		}
 		if (roomObj.viewers == 1) {
-			const roomIx = Rooms.findIndex((value) => value.id === roomObj.id);
+			const roomIx = Rooms.findIndex(
+				(value) => value.id === roomObj.id
+			);
 			Rooms.splice(roomIx, 1);
 		} else {
 			roomObj.users.splice(userRoomIx, 1);
 			roomObj.viewers--;
 		}
-		socket.to(roomid).broadcast.emit("user-leave", username);
+		socket.to(roomid).emit("user-leave", username);
 		socket.handshake.session.insideRoom =
 			socket.handshake.session.username =
 			socket.handshake.session.usertype =
@@ -409,11 +482,14 @@ const PORT = process.env.PORT || 4769;
 
 const updateAndListen = async function () {
 	try {
-		videoDetails = await utils.updateDetails();
+		[videoDetails, store] = await utils.updateDetails();
+
 		console.log("\nListening to PORT => " + PORT);
 
 		const IPs = utils.getIP();
-		console.log(`\nUse these IPs to connect over with PORT ${PORT} :`);
+		console.log(
+			`\nUse these IPs to connect over with PORT \x1b[32m${PORT}\x1b[0m :`
+		);
 		for (let i in IPs) {
 			console.log(i, "=>", IPs[i]);
 		}

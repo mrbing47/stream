@@ -15,7 +15,7 @@
 		<script defer src="/js/cookieFn.js"></script>
 		<script defer src="/js/room.js"></script>
 
-		<script src="https://kit.fontawesome.com/8d8384e88c.js" crossorigin="anonymous"></script>
+		<script src="https://kit.fontawesome.com/65f6040aed.js" crossorigin="anonymous"></script>
 		<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
 
 		<title><%= room.title %></title>
@@ -27,6 +27,7 @@
 				controls 
 			<% } %>>
 				<source src="<%= video.src %>" type="video/mp4" id="video-source" />
+				<track label="English subtitles" kind="subtitles" srclang="en" src="<%= video.srt %>" default="">
 			</video>
 			<div class="video-details">
 				<div id="video-title"><%= video.title %></div>

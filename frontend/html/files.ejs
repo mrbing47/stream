@@ -13,22 +13,26 @@
 		<script defer src="/js/files.js"></script>
 
 		<script defer src="/socket.io/socket.io.js"></script>
-		<script src="https://kit.fontawesome.com/8d8384e88c.js" crossorigin="anonymous"></script>
+		<script src="https://kit.fontawesome.com/65f6040aed.js" crossorigin="anonymous"></script>
 		<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
 
 		<title>Stream Video</title>
 	</head>
 
 	<body>
-		<div class="sort-container">
+		<div class="top-container">
 			<div class="sort-txt">View By:</div>
 			<div class="dropdown">
 				<div id="selected"></div>
-				<div class="menu">
+				<div id="menu">
 					<div class="options" id="alpha">Alphabetically</div>
 					<div class="options" id="latest">Latest</div>
 					<div class="options" id="oldest">Oldest</div>
 				</div>
+			</div>
+			<div id="search-container">
+				<input type="text" id="query" />
+				<button id="search"><i class="fa-solid fa-magnifying-glass"></i></button>
 			</div>
 		</div>
 
@@ -47,9 +51,7 @@
 					<% } %>
 				</div>
 				<div class="video-details">
-					<div class="video-title" style="white-space: nowrap; text-overflow: ellipsis;">
-						<%= file.title %>
-					</div>
+					<div class="video-title" style="white-space: nowrap; text-overflow: ellipsis"><%= file.title %></div>
 					<div class="video-size"><%= file.size %> MB</div>
 					<div class="video-duration"><%= file.duration %></div>
 					<div class="video-date"><%= file.date %></div>
