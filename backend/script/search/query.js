@@ -1,28 +1,21 @@
 const str = require("str-temp");
 
 function $and(query, cnt = 0) {
-	// let tabstr = "";
-	// for (let i = 0; i < cnt; i++) tabstr += "--";
-	// const tabtemp = str(`${tabstr}{} => {}`);
-
-	//console.log(tabtemp(`QUERY`, `${query}`));
 	const data = str_processor(query);
 	let result = [];
 
 	for (let i of data) {
 		const [main, bracket] = i;
-		//console.log(tabtemp(`MAIN`, `${main}`));
-		//console.log(tabtemp(`BRACKETS`, `${bracket}`));
 
 		if (!bracket) {
-			result = [...result, main];
+			result.push(main);
 			continue;
 		}
 
-		let temparr = [];
 		let resarr = [main];
 
 		for (let j of bracket) {
+			let temparr = [];
 			const brackdata = $and(j, ++cnt);
 			for (let k of brackdata) {
 				for (let l of resarr) {
@@ -33,12 +26,9 @@ function $and(query, cnt = 0) {
 			}
 
 			resarr = temparr;
-			//console.log(tabtemp("RESARR", `${resarr}`));
-			temparr = [];
 		}
 		result = [...result, ...resarr];
 	}
-	//console.log(tabtemp(`RESULT`, `${result}`));
 	return result;
 }
 

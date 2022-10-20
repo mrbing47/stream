@@ -112,11 +112,40 @@ _**PS**: NEVER LEARN BATCH_
 
 ---
 
+## Query String
+
+I have introduced a searching algoritm which does the job _*pretty well*_. To give queries more power and flexibility, I have added string manipulation. You can produce multiple query strings to get result for them using just single string.
+
+To use this functionality you just need to use `&` in the strings. In order to produce complex strings, you can use parentheses `()`. There are some examples below:
+
+```
+"A(B(Z&X)&C)D(E&F)GH&JK" = [
+    "ABZDEGH",
+    "ABXDEGH",
+    "ABZDFGH",
+    "ABXDFGH",
+    "ACDEGH",
+    "ACDFGH",
+    "JK"
+]
+
+"(Bubble&Merge&Insertion) Sort" = [
+    "Bubble Sort",
+    "Merge Sort",
+    "Insertion Sort"
+]
+```
+
+---
+
 ## NOTE
 
-1. To generate thumbnails for **video** files, create a folder `tn` inside `ROOT` directory.
-2. This app supports multiple extensions, currently this code only has some extensions but you can add more extensions in array `supportedExt` in file `/backend/script/script.js :: line 18`.
-3. To use `stream.cmd` as a **Command Prompt** command, add the **Project** directory to the `PATH` variables.
+1. To generate thumbnails for **video** files, create a folder `tn` inside `ROOT` directory. `(NEED to provide a cmd param)`
+2. This app supports multiple extensions, currently this code only has some extensions but you can add more extensions in array `supportedExt` in file `/backend/script/script.js`.
+3. To ignore files and folder to be scanned by the project, there is an array `ignoreFiles` in file `/backend/script/script.js`.
+4. To use `stream.cmd` as a **Command Prompt** command, add the **Project** directory to the `PATH` variables.
+5. For now, there no way to escape `&` in search query. `(NNED FIX)`
+6. Videos that are situated inside a folder in the root will show up in the result but will not open as you click them. `(NEED FIX)`
 
 </br>
 
