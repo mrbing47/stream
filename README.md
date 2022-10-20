@@ -138,13 +138,24 @@ To use this functionality, you just need to use `&` in the strings. In order to 
 
 ---
 
+## TODO
+
+-   [ ] Need to escape `&`.
+-   [ ] Add param for `tn`.
+-   [ ] Re-write `getFile()`.
+-   [ ] Fix videos inside a folder in search.
+-   [ ] Accept params in js except batch.
+-   [ ] Modulate routes in separate files.
+
+---
+
 ## NOTE
 
 1. To generate thumbnails for **video** files, create a folder `tn` inside `ROOT` directory. `(NEED to provide a cmd param)`
 2. This app supports multiple extensions, currently this code only has some extensions but you can add more extensions in array `supportedExt` in file `/backend/script/script.js`.
 3. To ignore files and folder to be scanned by the project, there is an array `ignoreFiles` in file `/backend/script/script.js`.
 4. To use `stream.cmd` as a **Command Prompt** command, add the **Project** directory to the `PATH` variables.
-5. For now, there no way to escape `&` in search query. `(NEED FIX)`
+5. For now, there is no way to escape `&` in search query. `(NEED FIX)`
 6. Videos that are situated inside a folder in the root will show up in the result but will not open as you click them. `(NEED FIX)`
 
 </br>
