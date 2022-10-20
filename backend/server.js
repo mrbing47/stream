@@ -302,11 +302,11 @@ app.get("/file", (req, res) => {
 });
 
 app.get("/search", (req, res) => {
-	console.log(req.query);
-	const query = req.query.q;
-	console.log(query);
+	console.log("ORIGINAL QUERY =>", req.query);
+	const query = req.query.q.replaceAll("%26", "&").trim();
+	console.log("REPLACED `&` QUERY =>", query);
 	let videos = store.search(query, 1);
-	console.log(req.query.sort);
+	console.log("SORTING =>", req.query.sort);
 	if (req.query.sort) {
 		if (req.query.sort === "latest")
 			videos = videos.sort((a, b) => b.birthtime - a.birthtime);

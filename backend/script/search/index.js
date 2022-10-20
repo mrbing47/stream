@@ -30,10 +30,13 @@ class Store {
 		if (query.match(/\&/)) query = $and(query);
 		else query = [query];
 
+		console.log("SEARCHING =>", query);
 		let result = [];
 
 		for (let q of query) {
-			const querySet = new Set(q.toLowerCase().match(this.#tokenReg));
+			const querySet = new Set(
+				q.toLowerCase().match(this.#tokenReg)
+			);
 			const qtl = querySet.size;
 			const queryObj = {};
 			console.log(querySet, qtl);
@@ -50,10 +53,18 @@ class Store {
 					});
 				}
 			}
-			console.log(queryObj);
+
 			const sortedRes = Object.entries(queryObj)
 				.sort(([, a], [, b]) => b.cnt - a.cnt)
-				.reduce((r, [, v]) => (threshold == -1 || v.cnt > qtl - threshold ? [...r, v.data] : r), []);
+				.reduce(
+					(r, [, v]) =>
+						threshold == -1 || v.cnt > qtl - threshold
+							? [...r, v.data]
+							: r,
+					[]
+				);
+
+			console.log("RESULTS FOR A QUERY =>", q, sortedRes);
 			result = [...result, ...sortedRes];
 		}
 		return result;

@@ -14,7 +14,7 @@ if (window.location.pathname == "/search") {
 		'<div class="options" id="relevant">Relevant</div>'
 	);
 	const queryString = urlParams.get("q");
-	queryInput.value = queryString;
+	queryInput.value = queryString.replaceAll("%26", "&").trim();
 }
 
 const sortMethod = urlParams.get("sort");
