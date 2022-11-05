@@ -23,7 +23,14 @@ const CryptoJS = require("crypto-js");
 const { networkInterfaces } = require("os");
 
 const supportedExt = ["mp4", "mkv", "m4v", "avi", "vtt"];
-const ignoreFiles = ["tn", "details"];
+const ignoreFiles = [
+	"tn",
+	"details",
+	...(process.env.IGNORE_FILES?.toString()
+		.trim()
+		.split("|")
+		.map((ele) => ele.toString().trim()) ?? []),
+];
 
 var isTn = true;
 

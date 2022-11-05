@@ -50,6 +50,17 @@ for (const option of menuOptions) {
 	});
 }
 
+queryInput.addEventListener("keyup", (e) => {
+	if (e.key === "Enter") {
+		submitQuery.dispatchEvent(
+			new MouseEvent("click", {
+				bubbles: false,
+				cancelable: false,
+			})
+		);
+	}
+});
+
 submitQuery.addEventListener("click", () => {
 	const query = queryInput.value.replaceAll("&", "%26").trim();
 	const redirectedUrl = new URL(window.location.origin);
