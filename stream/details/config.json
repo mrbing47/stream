@@ -1,0 +1,1 @@
+{"port":4769,"ignore_files":["stream","node_modules",".git"],"video_ext":["mp4","mkv","m4v","avi","vtt"],"audio_ext":["mp3","avi","wav","flac"],"image_ext":["jpg","jpeg","png","webp"],"tn":true}

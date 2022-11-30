@@ -87,8 +87,9 @@ for (const card of videoCards) {
 		const currUrlParams = new URLSearchParams(
 			window.location.search
 		);
+		// console.log(card.dataset);
 		const newUrlParams = new URLSearchParams({
-			path: container[0].id,
+			path: card.dataset.filePath,
 			folder: card.id,
 		});
 
@@ -98,19 +99,21 @@ for (const card of videoCards) {
 		url.search = newUrlParams;
 
 		if (cardType === "file") {
-			setCookie("video", {
-				title: card
-					.querySelector(".video-title")
-					.innerText.trim(),
-				size: card
-					.querySelector(".video-size")
-					.innerText.trim(),
-				time: card
-					.querySelector(".video-duration")
-					.innerText.trim(),
-			});
+			if (card.dataset.fileType === 1)
+				setCookie("video", {
+					title: card
+						.querySelector(".video-title")
+						.innerText.trim(),
+					size: card
+						.querySelector(".video-size")
+						.innerText.trim(),
+					time: card
+						.querySelector(".video-duration")
+						.innerText.trim(),
+				});
 		}
 
+		// console.log(url.href);
 		window.location.href = url.href;
 	});
 }

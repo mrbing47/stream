@@ -143,10 +143,10 @@ To use this functionality, you just need to use `&` in the strings. In order to 
 ## TODO
 
 -   [ ] Need to escape `&`.
--   [ ] Add param for `tn`.
--   [ ] Re-write `getFile()`.
+-   [x] Add param for `tn`.
+-   [x] Re-write `getFile()`.
 -   [ ] Fix videos inside a folder in search.
--   [ ] Accept params in js except batch.
+-   [x] Accept params in js except batch.
 -   [ ] Modulate routes in separate files.
 
 ---

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+
+		<link rel="stylesheet" href="/css/files.css" />
+		<link rel="stylesheet" href="/css/global.css" />
+
+		<link
+			rel="shortcut icon"
+			href="/favicon/favicon.ico"
+			type="image/x-icon"
+		/>
+
+		<script defer src="/js/cookieFn.js"></script>
+		<script defer src="/js/folder.js"></script>
+
+		<script defer src="/socket.io/socket.io.js"></script>
+		<script
+			src="https://kit.fontawesome.com/49b0395cba.js"
+			crossorigin="anonymous"
+		></script>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+			rel="stylesheet"
+		/>
+
+		<title>Stream Video</title>
+	</head>
+
+	<body>
+		<div class="top-container">
+			<div class="sort-txt">View By:</div>
+			<div class="dropdown">
+				<div id="selected"></div>
+				<div id="menu">
+					<div class="options" id="alpha">Alphabetically</div>
+					<div class="options" id="latest">Latest</div>
+					<div class="options" id="oldest">Oldest</div>
+				</div>
+			</div>
+			<div id="search-container">
+				<input type="text" id="query" />
+				<button id="search">
+					<i class="fa-solid fa-magnifying-glass"></i>
+				</button>
+			</div>
+		</div>
+
+		<div class="video-container">
+			<% data.forEach(file => { %> <% if (file[1].type === 0){%>
+			<div
+				class="video-card folder"
+				id="<%= file[0] %>"
+				data-file-type="<%= file[1].type %>"
+				data-file-path="<%= file[1].path %>"
+			>
+				<div class="video-img">
+					<i class="fa-solid fa-folder fa-6x"></i>
+				</div>
+				<div class="video-details">
+					<div class="video-title">
+						<% if(file[0] > 45){ %> <%= file[0].slice(0, 42)
+						+ "..." %> <% } else{ %> <%= file[0] %> <% } %>
+					</div>
+					<div class="video-date folder-date">
+						<%= new
+						Date(file[1].birthtime).toString().slice(4,15)
+						%>
+					</div>
+				</div>
+			</div>
+			<% } %> <% if (file[1].type === 1){%>
+			<div
+				class="video-card file"
+				id="<%= file[0] %>"
+				data-file-type="<%= file[1].type %>"
+				data-file-path="<%= file[1].path %>"
+			>
+				<div class="video-img">
+					<% if (tn) { %>
+					<img
+						src="<%=`/tn?path=${file[1].path}&file=${path.parse(file[0]).name}-${file[1].type}.png`%>"
+						alt="<%= file[0] %>"
+						class="video-tn"
+						loading="lazy"
+					/>
+					<% } else {%>
+					<i class="fa-solid fa-video fa-6x"></i>
+					<% } %>
+				</div>
+				<div class="video-details">
+					<div
+						class="video-title"
+						style="
+							white-space: nowrap;
+							text-overflow: ellipsis;
+						"
+					>
+						<%= file[0] %>
+					</div>
+					<div class="video-size">
+						<%= fileSize(file[1].size) %>
+					</div>
+					<div class="video-duration">
+						<%= file[1].duration %>
+					</div>
+					<div class="video-date">
+						<%=new
+						Date(file[1].birthtime).toString().slice(4,15)%>
+					</div>
+					<div class="video-dimensions">
+						<%= file[1].dimensions %>
+					</div>
+				</div>
+			</div>
+
+			<% } %> <% if (file[1].type === 2){%>
+			<div
+				class="video-card file"
+				id="<%= file[0] %>"
+				data-file-type="<%= file[1].type %>"
+				data-file-path="<%= file[1].path %>"
+			>
+				<div class="video-img">
+					<i class="fa-solid fa-volume-high fa-6x"></i>
+				</div>
+				<div class="video-details">
+					<div
+						class="video-title"
+						style="
+							white-space: nowrap;
+							text-overflow: ellipsis;
+						"
+					>
+						<%= file[0] %>
+					</div>
+					<div class="video-size">
+						<%= fileSize(file[1].size) %>
+					</div>
+					<div class="video-duration">
+						<%= file[1].duration %>
+					</div>
+					<div class="video-date">
+						<%=new
+						Date(file[1].birthtime).toString().slice(4,15)%>
+					</div>
+				</div>
+			</div>
+
+			<% } %> <% if (file[1].type === 3){%>
+			<div
+				class="video-card file"
+				id="<%= file[0] %>"
+				data-file-type="<%= file[1].type %>"
+				data-file-path="<%= file[1].path %>"
+			>
+				<div class="video-img">
+					<% if (tn) { %>
+					<img
+						src="<%=`/tn?path=${file[1].path}&file=${path.parse(file[0]).name}-${file[1].type}.png`%>"
+						alt="<%= file[0] %>"
+						class="video-tn"
+						loading="lazy"
+					/>
+					<% } else {%>
+					<i class="fa-solid fa-image fa-6x"></i>
+					<% } %>
+				</div>
+				<div class="video-details">
+					<div
+						class="video-title"
+						style="
+							white-space: nowrap;
+							text-overflow: ellipsis;
+						"
+					>
+						<%= file[0] %>
+					</div>
+					<div class="video-size">
+						<%= fileSize(file[1].size) %>
+					</div>
+					<div class="video-date">
+						<%=new
+						Date(file[1].birthtime).toString().slice(4,15)%>
+					</div>
+					<div class="video-dimensions">
+						<%= file[1].dimensions %>
+					</div>
+				</div>
+			</div>
+
+			<% } %> <% }); %>
+		</div>
+	</body>
+</html>

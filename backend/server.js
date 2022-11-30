@@ -1,12 +1,14 @@
 const path = require("path");
 const fs = require("fs");
-
 const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const morgan = require("morgan");
 const utils = require("./script/utils.js");
+const dataAndStore = require("./script/data-and-store");
+let fileSearch = () => {},
+	storeQuery = () => {};
 
 const session = require("express-session")({
 	secret: process.env.SECRET_KEY,
@@ -19,9 +21,9 @@ const session = require("express-session")({
 const socketSession = require("express-socket.io-session");
 const cookieParser = require("cookie-parser");
 const uniqid = require("uniqid");
-const frontend = path.join(__dirname, process.env.FRONTEND);
+const { File, Configuration } = require("./config.js");
+const frontend = path.join(__dirname, "../frontend");
 let Rooms = [];
-let store = undefined;
 
 function getCookies(strCookies) {
 	var cookies = strCookies.split(";");
@@ -202,102 +204,91 @@ app.get("/file", (req, res) => {
 		return;
 	}
 
-	const decryptPath = utils.decryptPath(req.query.path).trim();
+	const decryptPath = req.query.path.trim();
 	console.log("query-path =>", decryptPath);
 
-	const fileParts = req.query.folder.split(".");
-	const fileTitle = [...fileParts.slice(0, -1)].join(".");
-	const fileExt = fileParts.slice(-1)[0];
+	// const fileParts = req.query.folder.split(".");
+	// const fileTitle = [...fileParts.slice(0, -1)].join(".");
+	// const fileExt = fileParts.slice(-1)[0];
 
-	const pathReq = path.join(decryptPath, fileTitle).trim();
+	const pathReq = path.join(decryptPath, req.query.folder).trim();
 
-	const result = utils.iterateDir(videoDetails, pathReq, fileExt);
+	const result = fileSearch(pathReq);
 
-	if (result == 404) {
+	if (result === 404) {
 		res.status(404).send("Wrong Video!!!");
 		return;
 	}
 
-	const pathArr =
-		pathReq.split("\\").length == 1
-			? pathReq.split("/")
-			: pathReq.split("\\");
-	pathArr.shift();
-	let finalPath = path.join(...pathArr);
+	const filePath = path.join(File.ROOT, pathReq);
+	const fileSize = result.size;
 
-	const filePath = path.join(
-		process.env.ROOT,
-		finalPath + "." + fileExt
-	);
-
-	var fileSize;
-
-	try {
-		fileSize = fs.statSync(filePath).size;
-	} catch (err) {
-		res.send("Wrong path or file name!!!");
-		return;
-	}
-
-	if (
-		req.session.usertype === "leader" &&
-		!req.cookies.hasOwnProperty("watchmode")
-	) {
-		const roomIx = Rooms.findIndex(
-			(value) => value.id === req.session.roomid
-		);
-
+	if (result.type === 1 || result.type === 2) {
 		if (
-			roomIx != -1 &&
-			Rooms[roomIx].users.some(
-				(value) => value.id === req.session.userid
-			) &&
-			req.cookies.video &&
-			!req.session.insideRoom
+			req.session.usertype === "leader" &&
+			!req.cookies.hasOwnProperty("watchmode")
 		) {
-			const video = JSON.parse(req.cookies.video);
-			video.src = req.url;
-			Rooms[roomIx].video = video;
-			res.redirect("/room/" + req.session.roomid);
-			return;
+			const roomIx = Rooms.findIndex(
+				(value) => value.id === req.session.roomid
+			);
+
+			if (
+				roomIx != -1 &&
+				Rooms[roomIx].users.some(
+					(value) => value.id === req.session.userid
+				) &&
+				req.cookies.video &&
+				!req.session.insideRoom
+			) {
+				const video = JSON.parse(req.cookies.video);
+				video.src = req.url;
+				Rooms[roomIx].video = video;
+				res.redirect("/room/" + req.session.roomid);
+				return;
+			}
+		}
+
+		const range = req.headers.range;
+
+		if (range) {
+			const parts = range.replace(/bytes=/, "").split("-");
+			const start = parseInt(parts[0], 10);
+			const end = parts[1]
+				? parseInt(parts[1], 10)
+				: fileSize - 1;
+
+			if (start >= fileSize) {
+				res.status(416).send(
+					"Requested range not satisfiable\n" +
+						start +
+						" >= " +
+						fileSize
+				);
+				return;
+			}
+
+			const chunksize = end - start + 1;
+			const file = fs.createReadStream(filePath, { start, end });
+			const head = {
+				"Content-Range": `bytes ${start}-${end}/${fileSize}`,
+				"Accept-Ranges": "bytes",
+				"Content-Length": chunksize,
+				"Content-Type": "video/mp4",
+			};
+
+			res.writeHead(206, head);
+			file.pipe(res);
+		} else {
+			const head = {
+				"Content-Length": fileSize,
+				"Content-Type": "video/mp4",
+			};
+			res.writeHead(200, head);
+			fs.createReadStream(filePath).pipe(res);
 		}
 	}
-
-	const range = req.headers.range;
-
-	if (range) {
-		const parts = range.replace(/bytes=/, "").split("-");
-		const start = parseInt(parts[0], 10);
-		const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-
-		if (start >= fileSize) {
-			res.status(416).send(
-				"Requested range not satisfiable\n" +
-					start +
-					" >= " +
-					fileSize
-			);
-			return;
-		}
-
-		const chunksize = end - start + 1;
-		const file = fs.createReadStream(filePath, { start, end });
-		const head = {
-			"Content-Range": `bytes ${start}-${end}/${fileSize}`,
-			"Accept-Ranges": "bytes",
-			"Content-Length": chunksize,
-			"Content-Type": "video/mp4",
-		};
-
-		res.writeHead(206, head);
-		file.pipe(res);
-	} else {
-		const head = {
-			"Content-Length": fileSize,
-			"Content-Type": "video/mp4",
-		};
-		res.writeHead(200, head);
-		fs.createReadStream(filePath).pipe(res);
+	if (result.type === 3) {
+		res.sendFile(filePath);
 	}
 });
 
@@ -305,91 +296,87 @@ app.get("/search", (req, res) => {
 	console.log("ORIGINAL QUERY =>", req.query);
 	const query = req.query.q.replaceAll("%26", "&").trim();
 	console.log("REPLACED `&` QUERY =>", query);
-	let videos = store.search(query, 1);
+	let videos = storeQuery(query, 1);
 	console.log("SORTING =>", req.query.sort);
 	if (req.query.sort) {
 		if (req.query.sort === "latest")
-			videos = videos.sort((a, b) => b.birthtime - a.birthtime);
+			videos = videos.sort(
+				(a, b) => b[1].birthtime - a[1].birthtime
+			);
 		if (req.query.sort === "oldest")
-			videos = videos.sort((a, b) => a.birthtime - b.birthtime);
+			videos = videos.sort(
+				(a, b) => a[1].birthtime - b[1].birthtime
+			);
 		if (req.query.sort === "alpha")
 			videos = videos.sort((a, b) =>
-				a.title.localeCompare(b.title, "en", {
+				a[0].localeCompare(b[0], "en", {
 					sensitivity: "base",
 				})
 			);
 	}
 
-	res.render("files", {
+	res.render("folder", {
+		tn: Configuration._saved[Configuration._options.TN],
 		data: videos,
-		path: utils.encryptPath("root"),
+		fileSize: utils.fileSize,
+		folderPath: "/",
+		path,
 		search: true,
 	});
 });
 
 app.get("/folder", (req, res) => {
-	if (!req.query.path && !req.query.folder) {
-		const encryptPath = utils.encryptPath("root");
-
-		if (videoDetails) {
-			var sorted = [...videoDetails];
-			if (req.query.sort) {
-				if (req.query.sort === "latest")
-					sorted = sorted.sort(
-						(a, b) => b.birthtime - a.birthtime
-					);
-				if (req.query.sort === "oldest")
-					sorted = sorted.sort(
-						(a, b) => a.birthtime - b.birthtime
-					);
-			}
-
-			res.render("files", { data: sorted, path: encryptPath });
-		} else res.status(500).send("INTERNAL ERROR!!!");
-		return;
-	}
-	if (!req.query.path || !req.query.folder) {
-		res.send("All Query Parameters are required!!!");
-		return;
-	}
-
-	const decryptPath = utils.decryptPath(req.query.path);
-	const pathReq = path.join(decryptPath, req.query.folder).trim();
-
-	var result = utils.iterateDir(videoDetails, pathReq);
-
 	if (
-		result == 404 ||
-		Object.prototype.toString.call(result) != "[object Array]"
+		(!req.query.path && req.query.folder) ||
+		(req.query.path && !req.query.folder)
 	) {
+		res.send("All Query Parameters or None are required!!!");
+		return;
+	}
+
+	// console.log({ path: req.query.path, folder: req.query.folder });
+
+	var filePath = "";
+	if (!req.query.path && !req.query.folder) filePath = "/";
+	else filePath = path.join(req.query.path, req.query.folder);
+
+	var result = fileSearch(filePath);
+	if (result === 404) {
 		res.status(404).send("Wrong Path!!!");
 		return;
 	}
 
-	if (req.query.sort) {
-		if (req.query.sort === "latest")
-			result = result.sort((a, b) => b.birthtime - a.birthtime);
-		if (req.query.sort === "oldest")
-			result = result.sort((a, b) => a.birthtime - b.birthtime);
-	}
+	if (req.query.sort === undefined || req.query.sort === "alpha")
+		result = Object.entries(result).sort((a, b) =>
+			a[0].localeCompare(b[0], "en", {
+				sensitivity: "base",
+			})
+		);
+	if (req.query.sort === "latest")
+		result = Object.entries(result).sort(
+			(a, b) => b[1].birthtime - a[1].birthtime
+		);
+	if (req.query.sort === "oldest")
+		result = Object.entries(result).sort(
+			(a, b) => a[1].birthtime - b[1].birthtime
+		);
 
-	const encryptPath = utils.encryptPath(pathReq);
-	res.render("files", { data: result, path: encryptPath });
+	res.render("folder", {
+		tn: Configuration._saved[Configuration._options.TN],
+		data: result,
+		folderPath: filePath,
+		fileSize: utils.fileSize,
+		path,
+	});
 });
 
-app.get("/tn/:tn", (req, res) => {
-	fs.readdir(process.env.TN, (err, data) => {
-		if (err) {
-			res.status(500).send(err);
-			return;
-		}
-
-		if (data.includes(req.params.tn))
-			res.sendFile(
-				path.join(process.env.TN, "/" + req.params.tn)
-			);
-		else res.status(404).send("Incorrect ID");
-	});
+app.get("/tn", (req, res) => {
+	if (!req.query.path || !req.query.file) {
+		res.send("All Query Parameters are required!!!");
+		return;
+	}
+	const tnPath = path.join(File.TN, req.query.path, req.query.file);
+	res.sendFile(tnPath);
 });
 
 io.use(socketSession(session));
@@ -478,11 +465,9 @@ io.on("connection", (socket) => {
 	});
 });
 
-const PORT = process.env.PORT || 4769;
-
-const updateAndListen = async function () {
+const initAndListen = async function (PORT) {
 	try {
-		[videoDetails, store] = await utils.updateDetails();
+		[fileSearch, storeQuery] = await dataAndStore();
 
 		console.log("\nListening to PORT => " + PORT);
 
@@ -502,4 +487,6 @@ const updateAndListen = async function () {
 	}
 };
 
-http.listen(PORT, updateAndListen);
+module.exports = async (PORT) => {
+	http.listen(PORT, () => initAndListen(PORT));
+};

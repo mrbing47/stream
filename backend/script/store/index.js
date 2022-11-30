@@ -3,16 +3,18 @@ const { $and } = require("./query");
 class Store {
 	#tokenReg = /[a-z0-9]+/g;
 	#tokens = {};
-	#cb;
+	#text;
 
-	constructor({ cb = () => {}, tokens = {} }) {
-		this.#cb = cb;
+	constructor({ text = (e) => e, tokens = {} }) {
+		this.#text = text;
 		this.#tokens = tokens;
 	}
 
-	tokenize(arr) {
+	tokenize(arr, { merge = false } = {}) {
+		if (!merge) this.#tokens = {};
+
 		for (let ele of arr) {
-			const temp = this.#cb(ele).toLowerCase();
+			const temp = this.#text(ele).toLowerCase();
 			const matches = new Set(temp.match(this.#tokenReg));
 
 			for (let match of matches) {
@@ -43,7 +45,7 @@ class Store {
 			for (let qt of querySet) {
 				if (this.#tokens[qt]) {
 					this.#tokens[qt].forEach((ele) => {
-						const text = this.#cb(ele);
+						const text = this.#text(ele);
 						if (queryObj[text]) queryObj[text].cnt++;
 						else
 							queryObj[text] = {
