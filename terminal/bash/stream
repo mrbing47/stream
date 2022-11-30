@@ -1,0 +1,1 @@
+node "/path/to/project/index.js" $*
