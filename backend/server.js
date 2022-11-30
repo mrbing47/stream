@@ -1,4 +1,7 @@
 const path = require("path");
+require("dotenv").config({
+	path: path.join(__dirname, "./.env"),
+});
 const fs = require("fs");
 const express = require("express");
 const app = express();
@@ -9,7 +12,6 @@ const utils = require("./script/utils.js");
 const dataAndStore = require("./script/data-and-store");
 let fileSearch = () => {},
 	storeQuery = () => {};
-
 const session = require("express-session")({
 	secret: process.env.SECRET_KEY,
 	resave: true,
@@ -51,7 +53,7 @@ app.set("views", path.join(frontend, "/html"));
 app.use(morgan("short"));
 
 app.use((req, res, next) => {
-	//res.set("Cache-Control", "public, max-age= 60 * 10");
+	res.set("Cache-Control", "public, max-age= 60 * 10");
 	next();
 });
 
@@ -207,12 +209,7 @@ app.get("/file", (req, res) => {
 	const decryptPath = req.query.path.trim();
 	console.log("query-path =>", decryptPath);
 
-	// const fileParts = req.query.folder.split(".");
-	// const fileTitle = [...fileParts.slice(0, -1)].join(".");
-	// const fileExt = fileParts.slice(-1)[0];
-
 	const pathReq = path.join(decryptPath, req.query.folder).trim();
-
 	const result = fileSearch(pathReq);
 
 	if (result === 404) {
@@ -468,8 +465,6 @@ io.on("connection", (socket) => {
 const initAndListen = async function (PORT) {
 	try {
 		[fileSearch, storeQuery] = await dataAndStore();
-
-		console.log("\nListening to PORT => " + PORT);
 
 		const IPs = utils.getIP();
 		console.log(
