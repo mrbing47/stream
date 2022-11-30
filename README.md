@@ -145,7 +145,7 @@ To use this functionality, you just need to use `&` in the strings. In order to 
 -   [ ] Need to escape `&`.
 -   [x] Add param for `tn`.
 -   [x] Re-write `getFile()`.
--   [ ] Fix videos inside a folder in search.
+-   [x] Fix videos inside a folder in search.
 -   [x] Accept params in js except batch.
 -   [ ] Modulate routes in separate files.
 
