@@ -35,7 +35,7 @@ function fileSize(size = 0) {
 
 function getIP() {
 	const nets = networkInterfaces();
-	const results = Object.create(null); // or just '{}', an empty object
+	const results = {};
 
 	for (const name of Object.keys(nets)) {
 		for (const net of nets[name]) {
