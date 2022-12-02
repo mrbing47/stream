@@ -1,11 +1,26 @@
 const { CommandHandler, Command } = require("./commands");
 const chalk = require("chalk");
 const fs = require("fs");
+const path = require("path");
 const readlineSync = require("readline-sync");
 const readline = require("readline");
 const { File, Configuration } = require("../../config");
 const server = require("../../server");
 
+function setROOT(dir) {
+	try {
+		let folderPath;
+		if (path.isAbsolute(dir)) folderPath = dir;
+		else folderPath = path.join(File.ROOT, dir);
+
+		fs.accessSync(folderPath);
+		File.ROOT = folderPath;
+
+		return [true, folderPath];
+	} catch (err) {
+		return [false, "Invalid Directory"];
+	}
+}
 class Type {
 	static INTEGER = "0123";
 	static STRING = "string";
@@ -95,14 +110,14 @@ const init = new Command({
 		args: [CommandOptions.YES, CommandOptions.SILENT],
 	},
 	async action(data, options, ch) {
+		let folderPath;
 		if (data) {
-			try {
-				fs.accessSync(data);
-				File.ROOT = data;
-			} catch (err) {
-				return [false, "Invalid Directory"];
-			}
-		}
+			const result = setROOT(data);
+			if (result[0]) folderPath = result[1];
+			else return result[1];
+		} else folderPath = File.ROOT;
+
+		console.log("\n", chalk.black.bgWhite(" ", folderPath, " "));
 
 		if (!options.args.y) {
 			const questions = {
@@ -191,14 +206,14 @@ const reset = new Command({
 		],
 	},
 	async action(data, options, ch) {
+		let folderPath;
 		if (data) {
-			try {
-				fs.accessSync(data);
-				File.ROOT = data;
-			} catch (err) {
-				return [false, "Invalid Directory"];
-			}
-		}
+			const result = setROOT(data);
+			if (result[0]) folderPath = result[1];
+			else return result[1];
+		} else folderPath = File.ROOT;
+
+		console.log("\n", chalk.black.bgWhite(" ", folderPath, " "));
 
 		if (options.args.l)
 			return ch.shorts["i"].action("", {
@@ -240,14 +255,14 @@ const update = new Command({
 		],
 	},
 	async action(data, options, ch) {
+		let folderPath;
 		if (data) {
-			try {
-				fs.accessSync(data);
-				File.ROOT = data;
-			} catch (err) {
-				return [false, "Invalid Directory"];
-			}
-		}
+			const result = setROOT(data);
+			if (result[0]) folderPath = result[1];
+			else return result[1];
+		} else folderPath = File.ROOT;
+
+		console.log("\n", chalk.black.bgWhite(" ", folderPath, " "));
 
 		const questions = {};
 
@@ -320,16 +335,15 @@ const run = new Command({
 		args: [CommandOptions.SILENT],
 	},
 	async action(data, options, ch) {
+		let folderPath;
 		if (data) {
-			try {
-				fs.accessSync(data);
-				File.ROOT = data;
-			} catch (err) {
-				return [false, "Invalid Directory"];
-			}
-		}
+			const result = setROOT(data);
+			if (result[0]) folderPath = result[1];
+			else return result[1];
+		} else folderPath = File.ROOT;
 
-		CommandOptions.VIDEO_EXT[1];
+		console.log("\n", chalk.black.bgWhite(" ", folderPath, " "));
+
 		Object.entries(options.kwargs).forEach((ele) => {
 			let input = ele[1];
 			if (
@@ -369,14 +383,14 @@ const help = new Command({
 	description:
 		"This commands shows the help menu for the stream application.",
 	async action(data, options, ch) {
+		let folderPath;
 		if (data) {
-			try {
-				fs.accessSync(data);
-				File.ROOT = data;
-			} catch (err) {
-				return [false, "Invalid Directory"];
-			}
-		}
+			const result = setROOT(data);
+			if (result[0]) folderPath = result[1];
+			else return result[1];
+		} else folderPath = File.ROOT;
+
+		console.log("\n", chalk.black.bgWhite(" ", folderPath, " "));
 
 		console.log({ data, options });
 	},
@@ -384,19 +398,4 @@ const help = new Command({
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// (async () => {
-// 	let ch = new CommandHandler([init, reset, update, run]);
-// 	console.log(
-// 		await ch.process(
-// 			"init",
-// 			"E:TorrentAlgoExpert - Become an Algorithms Expert",
-// 			["--yes", "-y"]
-// 		)
-// 	);
-// })();
-
-// console.log(init.options);
-// console.log(help.options, run.options);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
 module.exports = new CommandHandler([init, reset, update, run, help]);

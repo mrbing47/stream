@@ -1,5 +1,4 @@
-// process.env.ROOT = process.cwd();
-const dotenv = require("dotenv").config();
+const chalk = require("chalk");
 const { File } = require("./backend/config");
 const ch = require("./backend/script/command-line/command_controller");
 const fs = require("fs");
@@ -15,5 +14,6 @@ function createFolders(folders) {
 
 (async () => {
 	createFolders([File.TN, File.JSON_PATH]);
-	await ch.process(process.argv);
+	const result = await ch.process(process.argv);
+	if (result) console.log(chalk.red(result));
 })();

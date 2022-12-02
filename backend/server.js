@@ -474,7 +474,7 @@ const initAndListen = async function (PORT) {
 			console.log(i, "=>", IPs[i]);
 		}
 
-		utils.openBrowser(PORT);
+		utils.openBrowser("http://localhost:" + PORT);
 		console.log("\n\n\n");
 	} catch (err) {
 		console.log(err);

@@ -1,23 +1,4 @@
-// const path = require("path");
-// require("dotenv").config({
-// 	path: path.join(__dirname, "../.env"),
-// });
-// const CryptoJS = require("crypto-js");
 const { networkInterfaces } = require("os");
-
-// function encryptPath(path) {
-// 	return CryptoJS.AES.encrypt(path, process.env.SECRET_KEY, {
-// 		iv: process.env.SECRET_KEY,
-// 		mode: CryptoJS.mode.CBC,
-// 		padding: CryptoJS.pad.Pkcs7,
-// 	}).toString();
-// }
-
-// function decryptPath(path) {
-// 	return CryptoJS.AES.decrypt(path, process.env.SECRET_KEY, {
-// 		iv: process.env.SECRET_KEY,
-// 	}).toString(CryptoJS.enc.Utf8);
-// }
 
 function round(num = 0) {
 	return Math.round((num + Number.EPSILON) * 100) / 100;
@@ -53,8 +34,7 @@ function getIP() {
 	return results;
 }
 
-function openBrowser(PORT) {
-	var url = "http://localhost:" + PORT;
+function openBrowser(url) {
 	var start =
 		process.platform == "darwin"
 			? "open"

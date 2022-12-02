@@ -12,7 +12,7 @@ const Store = require("./store/index");
 function getFileExtention(filename) {
 	let ext = filename.trim().split(".");
 	if (ext.length === 1) return;
-	ext = ext.slice(-1)[0];
+	ext = ext.at(-1);
 	return ext === "" ? undefined : ext;
 }
 
