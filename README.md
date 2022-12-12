@@ -51,19 +51,17 @@ Follow below steps in **order** to setup project:
 
 ## _.env_ Setup
 
-You need to rename _`sample.env`_ to _`.env`_ (dotenv) located in `/backend` folder. Variables you need to modify in the file:
+You need to rename _`sample.env`_ to _`.env`_ located in `ROOT/backend/` folder. You need to modify `SECRET_KEY` to prevent tampering of session cookie.
 
-```md
-SECRET_KEY=<a secret string for session>
+```dotenv
+SECRET_KEY=a secret string for session
 ```
-
-> `SECRET_KEY`: session cookie is signed with this secret to prevent tampering.
 
 ---
 
-## _CLI_
+## CLI
 
-This project comes with a custom build CLI menu to help users setup the project configuration at ease. To use these functionality, follow the following steps.
+This project comes with a custom build CLI menu to help users setup the project configuration at ease.
 
 Edit following shell files based on OS.
 
