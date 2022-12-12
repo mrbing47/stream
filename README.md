@@ -43,74 +43,50 @@ Follow below steps in **order** to setup project:
 1. Install `ffmpeg` for your respective OS.
 2. Run `npm i` to install node packages.
 3. Setup `dotenv` file (information given below).
-4. Use `npm start` to start the server.
-5. (Optional) Edit `stream.cmd`.
+4. Edit
+    - (LINUX / MAC) `terminal/bash/stream`
+    - (WINDOWS) `terminal/cmd/stream.cmd`.
 
 ---
 
 ## _.env_ Setup
 
-You need to rename _`.sample-env`_ to _`.env`_ (dotenv) located in `/backend` folder. Variables you need to modify in the file:
+You need to rename _`sample.env`_ to _`.env`_ (dotenv) located in `/backend` folder. Variables you need to modify in the file:
 
-```
-ROOT=path/to/your/content
-TN=${ROOT}\tn
-JSON_PATH=${ROOT}\details
-DATA_FILE=${JSON_PATH}\data.json
-TOKENS_FILE=${JSON_PATH}\tokens.json
-
-FRONTEND=../frontend
-
-(OPTIONAL)IGNORE_FILES=foldernames|filenames
-PORT=3000
-
-SECRET_KEY=string_for_encryption
+```md
+SECRET_KEY=<a secret string for session>
 ```
 
-Here you need to change `ROOT` and `SECRET_KEY` variables and `IGNORE_FILES` is an optional variable and if there is none file/folder to ignore, you can simply remove variable. <br>
-
-> What is `SECRET_KEY`? <br/>
-> For the key, when you pass a string, it's treated as a passphrase and used to derive an actual key and IV. Or you can pass a WordArray that represents the actual key. If you pass the actual key, you must also pass the actual IV.
+> `SECRET_KEY`: session cookie is signed with this secret to prevent tampering.
 
 ---
 
-## _stream.cmd_
+## _CLI_
 
-Edit `stream.cmd` and add the root path of the project, ie path to `package.json`. Edit the following line:
+This project comes with a custom build CLI menu to help users setup the project configuration at ease. To use these functionality, follow the following steps.
 
-```batch
-cd "path/to/project/root"
-```
+Edit following shell files based on OS.
 
-This files allows the user to start the server any place on any directory using **Command Prompt**. Following are the ways to pass **arguments** to the file:
+-   LINUX / MAC) `terminal/bash/stream`.
+-   (WINDOWS) `terminal/cmd/stream.cmd`.
 
-1. Nothing, this will open the file in **current** directory with the **default** port number in _`.env`_ file or in the _`server.js`_ file:
+and add the root path of the project, i.e., path to `index.js`. Edit the following line:
 
-```bash
-path/to/your/content> stream
-```
-
-2.Pass the **path** as an argument like:
+(LINUX / MAC)
 
 ```bash
-some/random/directory> stream "path/to/your/content"
+node "/path/to/project/index.js" $*
 ```
 
-3.Pass the **PORT** as an argument like:
+(WINDOWS)
 
-```bash
-some/random/directory> stream 1234
+```ps
+node "/path/to/project/index.js" %*
 ```
 
-4.Pass the **path** and **PORT** both as arguments like:
+This files allows the user to start the server any place on any directory using **Terminal** or **Command Prompt**.
 
-```bash
-some/random/directory> stream "path/to/your/content" 1234
-```
-
-This way, user don't have to hard code `ROOT` and `PORT` in _`.env`_ file
-
-_**PS**: NEVER LEARN BATCH_
+After completing the steps mentioned above, you will be able to configure the root directory of the media and pass _kwargs and args_ from cli itself.
 
 ---
 
@@ -153,11 +129,5 @@ To use this functionality, you just need to use `&` in the strings. In order to 
 
 ## NOTE
 
-1. To generate thumbnails for **video** files, create a folder `tn` inside `ROOT` directory. `(NEED to provide a cmd param)`
-2. This app supports multiple extensions, currently this code only has some extensions but you can add more extensions in array `supportedExt` in file `/backend/script/script.js`.
-3. To ignore files and folder to be scanned by the project, there is an array `ignoreFiles` in file `/backend/script/script.js` or you can use the env variable `IGNORE_FILES`.
-4. To use `stream.cmd` as a **Command Prompt** command, add the **Project** directory to the `PATH` variables.
-5. For now, there is no way to escape `&` in search query. `(NEED FIX)`
-6. Videos that are situated inside a folder in the root will show up in the result but will not open as you click them. `(NEED FIX)`
-
-</br>
+1. To use `stream.cmd` as a **Command Prompt** command, add the **Project** directory to the `PATH` variables.
+2. For now, there is no way to escape `&` in search query. `(NEED FIX)`.

@@ -45,10 +45,6 @@ function openBrowser(url) {
 }
 
 module.exports = {
-	// updateDetails,
-	// encryptPath,
-	// decryptPath,
-	// iterateDir,
 	getIP,
 	openBrowser,
 	fileSize,
