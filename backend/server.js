@@ -290,7 +290,7 @@ app.get("/file", (req, res) => {
 });
 
 app.get("/search", (req, res) => {
-	console.log("ORIGINAL QUERY =>", req.query);
+	// console.log("ORIGINAL QUERY =>", req.query);
 	const query = req.query.q.replaceAll("%26", "&").trim();
 	console.log("REPLACED `&` QUERY =>", query);
 	let videos = storeQuery(query, 1);

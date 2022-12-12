@@ -41,7 +41,7 @@ class Store {
 			);
 			const qtl = querySet.size;
 			const queryObj = {};
-			console.log(querySet, qtl);
+			// console.log(querySet, qtl);
 			for (let qt of querySet) {
 				if (this.#tokens[qt]) {
 					this.#tokens[qt].forEach((ele) => {
@@ -66,7 +66,7 @@ class Store {
 					[]
 				);
 
-			console.log("RESULTS FOR A QUERY =>", q, sortedRes);
+			// console.log("RESULTS FOR A QUERY =>", q, sortedRes);
 			result = [...result, ...sortedRes];
 		}
 		return result;

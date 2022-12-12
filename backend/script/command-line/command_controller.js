@@ -7,6 +7,16 @@ const readline = require("readline");
 const { File, Configuration } = require("../../config");
 const server = require("../../server");
 
+function createFolders(folders) {
+	for (let folder of folders) {
+		try {
+			fs.accessSync(folder);
+		} catch (e) {
+			fs.mkdirSync(folder, { recursive: true });
+		}
+	}
+}
+
 function setROOT(dir) {
 	try {
 		let folderPath;
@@ -16,6 +26,7 @@ function setROOT(dir) {
 		fs.accessSync(folderPath);
 		File.ROOT = folderPath;
 
+		createFolders([File.TN, File.JSON_PATH]);
 		return [true, folderPath];
 	} catch (err) {
 		return [false, "Invalid Directory"];
@@ -335,6 +346,7 @@ const run = new Command({
 		args: [CommandOptions.SILENT],
 	},
 	async action(data, options, ch) {
+		// console.log({ data, options });
 		let folderPath;
 		if (data) {
 			const result = setROOT(data);

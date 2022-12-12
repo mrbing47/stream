@@ -49,8 +49,13 @@ class CommandHandler {
 				const opstart = argv.findIndex((ele) =>
 					ele.startsWith("-")
 				);
-				// console.log(opstart);
-				data = argv.slice(argstart + 1, opstart).join(" ");
+				// console.log(opstart, argv.slice(argstart + 1));
+				data = argv
+					.slice(
+						argstart + 1,
+						opstart === -1 ? argv.length : opstart
+					)
+					.join(" ");
 				if (opstart !== -1) options = argv.slice(opstart);
 			}
 		}
