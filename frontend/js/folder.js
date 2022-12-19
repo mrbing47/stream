@@ -117,8 +117,8 @@ randomFile.addEventListener("click", (e) => {
 	const redirectedUrl = new URL(window.location.href);
 	redirectedUrl.search = urlParams;
 	redirectedUrl.searchParams.append("random", 1);
-
-	window.location.href = redirectedUrl.href;
+	window.open(redirectedUrl.href, "_blank");
+	// window.location.href = redirectedUrl.href;
 });
 
 // Currently no use of this piece of code
