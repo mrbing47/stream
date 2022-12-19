@@ -193,7 +193,6 @@ async function scanFiles(root, filesToScan = [], level = 1) {
 			}
 		}
 	}
-
 	return res;
 }
 
@@ -352,18 +351,22 @@ function searchFile(existingFiles = {}, filePath = "") {
 	} else return curr;
 }
 
+function filterFiles(files = [], fileTypes = []) {
+	const result = {};
+	for (let file of files)
+		if (fileTypes.indexOf(file[1].type) !== -1)
+			result[file[0]] = file[1];
+
+	return result;
+}
+
 function flattenObj(obj) {
-	let res = {};
+	let res = { ...obj.files };
 	for (let i in obj.folders) {
-		const {
-			files: _files,
-			folders: _folders,
-			...folderMetaData
-		} = obj.folders[i];
+		const { files, folders, ...folderMetaData } = obj.folders[i];
 
 		res = {
 			...res,
-			...obj.files,
 			[i]: {
 				...folderMetaData,
 			},
@@ -408,6 +411,7 @@ async function init() {
 	}
 	return [
 		(filePath) => searchFile(new_data, filePath),
+		filterFiles,
 		store.search.bind(store),
 	];
 }

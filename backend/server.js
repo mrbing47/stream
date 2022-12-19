@@ -11,6 +11,7 @@ const morgan = require("morgan");
 const utils = require("./script/utils.js");
 const dataAndStore = require("./script/data-and-store");
 let fileSearch = () => {},
+	filterFiles = () => {},
 	storeQuery = () => {};
 const session = require("express-session")({
 	secret: process.env.SECRET_KEY,
@@ -294,6 +295,18 @@ app.get("/search", (req, res) => {
 	const query = req.query.q.replaceAll("%26", "&").trim();
 	console.log("REPLACED `&` QUERY =>", query);
 	let videos = storeQuery(query, 1);
+	if (req.query.filter)
+		videos = Object.entries(
+			filterFiles(videos, [
+				...new Set(
+					req.query.filter
+						.split(",")
+						.map((e) => parseInt(e))
+						.filter((e) => !isNaN(e))
+				),
+			])
+		);
+
 	console.log("SORTING =>", req.query.sort);
 	if (req.query.sort) {
 		if (req.query.sort === "latest")
@@ -342,6 +355,16 @@ app.get("/folder", (req, res) => {
 		res.status(404).send("Wrong Path!!!");
 		return;
 	}
+
+	if (req.query.filter)
+		result = filterFiles(Object.entries(result), [
+			...new Set(
+				req.query.filter
+					.split(",")
+					.map((e) => parseInt(e))
+					.filter((e) => !isNaN(e))
+			),
+		]);
 
 	if (req.query.sort === undefined || req.query.sort === "alpha")
 		result = Object.entries(result).sort((a, b) =>
@@ -464,7 +487,7 @@ io.on("connection", (socket) => {
 
 const initAndListen = async function (PORT) {
 	try {
-		[fileSearch, storeQuery] = await dataAndStore();
+		[fileSearch, filterFiles, storeQuery] = await dataAndStore();
 
 		const IPs = utils.getIP();
 		console.log(

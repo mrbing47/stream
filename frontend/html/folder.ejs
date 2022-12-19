@@ -34,20 +34,36 @@
 
 	<body>
 		<div class="top-container">
-			<div class="sort-txt">View By:</div>
-			<div class="dropdown">
-				<div id="selected"></div>
-				<div id="menu">
-					<div class="options" id="alpha">Alphabetically</div>
-					<div class="options" id="latest">Latest</div>
-					<div class="options" id="oldest">Oldest</div>
+			<div class="top">
+				<div class="sort-container">
+					<div class="sort-txt">View By:</div>
+					<div class="dropdown">
+						<div id="selected"></div>
+						<div id="menu">
+							<div class="options" id="alpha">
+								Alphabetically
+							</div>
+							<div class="options" id="latest">
+								Latest
+							</div>
+							<div class="options" id="oldest">
+								Oldest
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="search-container">
+					<input type="text" id="query" />
+					<button id="search">
+						<i class="fa-solid fa-magnifying-glass"></i>
+					</button>
 				</div>
 			</div>
-			<div id="search-container">
-				<input type="text" id="query" />
-				<button id="search">
-					<i class="fa-solid fa-magnifying-glass"></i>
-				</button>
+			<div id="filter-container">
+				<div class="filter-options" data-id="0">Folders</div>
+				<div class="filter-options" data-id="1">Videos</div>
+				<div class="filter-options" data-id="2">Audios</div>
+				<div class="filter-options" data-id="3">Images</div>
 			</div>
 		</div>
 

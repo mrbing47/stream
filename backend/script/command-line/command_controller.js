@@ -26,7 +26,6 @@ function setROOT(dir) {
 		fs.accessSync(folderPath);
 		File.ROOT = folderPath;
 
-		createFolders([File.TN, File.JSON_PATH]);
 		return [true, folderPath];
 	} catch (err) {
 		return [false, "Invalid Directory"];
@@ -128,6 +127,8 @@ const init = new Command({
 			else return result[1];
 		} else folderPath = File.ROOT;
 
+		createFolders([File.TN, File.JSON_PATH]);
+
 		console.log("\n", chalk.black.bgWhite(" ", folderPath, " "));
 
 		if (!options.args.y) {
@@ -224,6 +225,7 @@ const reset = new Command({
 			else return result[1];
 		} else folderPath = File.ROOT;
 
+		createFolders([File.TN, File.JSON_PATH]);
 		console.log("\n", chalk.black.bgWhite(" ", folderPath, " "));
 
 		if (options.args.l)
@@ -272,7 +274,7 @@ const update = new Command({
 			if (result[0]) folderPath = result[1];
 			else return result[1];
 		} else folderPath = File.ROOT;
-
+		createFolders([File.TN, File.JSON_PATH]);
 		console.log("\n", chalk.black.bgWhite(" ", folderPath, " "));
 
 		const questions = {};
@@ -353,6 +355,7 @@ const run = new Command({
 			if (result[0]) folderPath = result[1];
 			else return result[1];
 		} else folderPath = File.ROOT;
+		createFolders([File.TN, File.JSON_PATH]);
 
 		console.log("\n", chalk.black.bgWhite(" ", folderPath, " "));
 
@@ -401,6 +404,7 @@ const help = new Command({
 			if (result[0]) folderPath = result[1];
 			else return result[1];
 		} else folderPath = File.ROOT;
+		createFolders([File.TN, File.JSON_PATH]);
 
 		console.log("\n", chalk.black.bgWhite(" ", folderPath, " "));
 
