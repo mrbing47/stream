@@ -6,6 +6,7 @@ const filterOptions = document.getElementsByClassName("filter-options");
 const selectedOption = document.getElementById("selected");
 const queryInput = document.getElementById("query");
 const submitQuery = document.getElementById("search");
+const randomFile = document.getElementById("random-container");
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -65,23 +66,14 @@ for (const option of menuOptions) {
 
 for (const option of filterOptions) {
 	option.addEventListener("click", (e) => {
-		let filters = new Set();
-		if (urlParams.get("filter"))
-			filters = new Set(
-				urlParams
-					.get("filter")
-					.split(",")
-					.map((e) => parseInt(e))
-					.filter((e) => !isNaN(e))
-			);
-
 		const elementType = parseInt(e.target.dataset.id);
-		if (filters.has(elementType)) filters.delete(elementType);
-		else filters.add(elementType);
+		if (filterTypes.has(elementType))
+			filterTypes.delete(elementType);
+		else filterTypes.add(elementType);
 
-		console.log({ filters: [...filters], elementType });
-		if (filters.size === 0) urlParams.delete("filter");
-		else urlParams.set("filter", [...filters].join());
+		console.log({ filters: [...filterTypes], elementType });
+		if (filterTypes.size === 0) urlParams.delete("filter");
+		else urlParams.set("filter", [...filterTypes].join());
 
 		const redirectedUrl = new URL(window.location.href);
 		redirectedUrl.search = urlParams;
@@ -120,44 +112,48 @@ submitQuery.addEventListener("click", () => {
 	window.location.href = redirectedUrl.href;
 });
 
-for (const card of videoCards) {
-	card.addEventListener("click", (event) => {
-		const cardType = card.classList[1];
+randomFile.addEventListener("click", (e) => {
+	urlParams.set("random", 1);
+	const redirectedUrl = new URL(window.location.href);
+	redirectedUrl.search = urlParams;
 
-		const url = new URL(
-			"/" + card.classList[1],
-			window.location.origin
-		);
-		const currUrlParams = new URLSearchParams(
-			window.location.search
-		);
-		// console.log(card.dataset);
-		const newUrlParams = new URLSearchParams({
-			path: card.dataset.filePath,
-			folder: card.id,
-		});
+	window.location.href = redirectedUrl.href;
+});
 
-		if (currUrlParams.get("sort"))
-			newUrlParams.set("sort", currUrlParams.get("sort"));
+function cardClickHandler(card) {
+	const cardType = card.classList[1];
 
-		url.search = newUrlParams;
-
-		if (cardType === "file") {
-			if (card.dataset.fileType === 1)
-				setCookie("video", {
-					title: card
-						.querySelector(".video-title")
-						.innerText.trim(),
-					size: card
-						.querySelector(".video-size")
-						.innerText.trim(),
-					time: card
-						.querySelector(".video-duration")
-						.innerText.trim(),
-				});
-		}
-
-		// console.log(url.href);
-		window.location.href = url.href;
+	const url = new URL(
+		"/" + card.classList[1],
+		window.location.origin
+	);
+	const currUrlParams = new URLSearchParams(window.location.search);
+	// console.log(card.dataset);
+	const newUrlParams = new URLSearchParams({
+		path: card.dataset.filePath,
+		title: card.id,
 	});
+
+	if (currUrlParams.get("sort"))
+		newUrlParams.set("sort", currUrlParams.get("sort"));
+
+	url.search = newUrlParams;
+
+	if (cardType === "file") {
+		if (card.dataset.fileType === 1)
+			setCookie("video", {
+				title: card
+					.querySelector(".video-title")
+					.innerText.trim(),
+				size: card
+					.querySelector(".video-size")
+					.innerText.trim(),
+				time: card
+					.querySelector(".video-duration")
+					.innerText.trim(),
+			});
+	}
+
+	// console.log(url.href);
+	window.location.href = url.href;
 }

@@ -352,10 +352,10 @@ function searchFile(existingFiles = {}, filePath = "") {
 }
 
 function filterFiles(files = [], fileTypes = []) {
-	const result = {};
+	const result = [];
 	for (let file of files)
 		if (fileTypes.indexOf(file[1].type) !== -1)
-			result[file[0]] = file[1];
+			result.push([file[0], file[1]]);
 
 	return result;
 }

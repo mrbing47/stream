@@ -8,21 +8,23 @@
 }
 .top {
 	display: flex;
-	justify-content: center;
+	justify-content: space-around;
 	align-items: center;
+	flex-wrap: wrap;
 }
 
-.sort-container {
+#sort-container {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	margin: 14px 16px;
 }
 
 .dropdown {
 	width: 160px;
 	cursor: context-menu;
 	position: relative;
-	margin: 0px 16px;
+	margin-left: 16px;
 	color: var(--text-color);
 	border: var(--card-border-gray);
 	box-shadow: var(--card-shadow);
@@ -31,8 +33,10 @@
 	background-color: var(--card-color);
 }
 
-.dropdown:hover {
-	color: var(--back-color-dark);
+.dropdown:hover,
+#random-container:hover,
+#random-container:hover > .fa-shuffle {
+	color: var(--back-color-dark) !important;
 }
 .sort-txt {
 	font-size: 20px;
@@ -50,6 +54,7 @@
 	left: 0px;
 	right: 0px;
 	position: absolute;
+	z-index: 10;
 	color: var(--text-color);
 	border: var(--card-border-gray);
 	box-shadow: var(--card-shadow);
@@ -73,7 +78,7 @@
 	color: var(--back-color);
 }
 #search-container {
-	margin: 0px 10vw;
+	margin: 14px 28px;
 }
 
 #query {
@@ -100,12 +105,29 @@
 	cursor: pointer;
 }
 
+#random-container {
+	text-align: center;
+	width: 140px;
+	cursor: context-menu;
+	position: relative;
+	margin: 14px 16px;
+	color: var(--text-color);
+	border: var(--card-border-gray);
+	box-shadow: var(--card-shadow);
+	border-radius: 8px;
+	padding: 0.7em 1em;
+	background-color: var(--card-color);
+}
+
 #filter-container {
-	display: flex;
-	justify-content: center;
+	margin-top: 14px;
+	padding: 0px 20px;
+	display: inline-grid;
+	place-content: center;
+	grid-template-columns: repeat(auto-fill, 100px);
 	align-items: center;
-	margin: 32px;
-	width: 100%;
+	gap: 20px;
+	width: 500px;
 }
 
 .filter-options {
@@ -172,8 +194,13 @@
 	color: var(--back-color-darker);
 }
 
-.fa-magnifying-glass {
-	color: var(--text-color);
+.fa-magnifying-glass,
+.fa-shuffle {
+	color: var(--text-color) !important;
+}
+
+.fa-shuffle {
+	margin-left: 4px;
 }
 
 .video-details {
@@ -235,13 +262,6 @@
 
 @media (max-width: 750px) {
 	.top {
-		flex-direction: column;
-	}
-	.top > div {
-		margin: 28px auto;
-	}
-
-	#filter-container {
 		flex-direction: column;
 	}
 }

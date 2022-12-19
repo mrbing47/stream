@@ -48,6 +48,10 @@ function getCookies(strCookies) {
 	return result;
 }
 
+function getRandomInt(max) {
+	return Math.floor(Math.random() * max);
+}
+
 app.set("view engine", "ejs");
 app.set("views", path.join(frontend, "/html"));
 
@@ -202,7 +206,7 @@ app.get("/room/:id", (req, res) => {
 });
 
 app.get("/file", (req, res) => {
-	if (!req.query.path || !req.query.folder) {
+	if (!req.query.path || !req.query.title) {
 		res.send("All Query Parameters are required!!!");
 		return;
 	}
@@ -210,7 +214,7 @@ app.get("/file", (req, res) => {
 	const decryptPath = req.query.path.trim();
 	console.log("query-path =>", decryptPath);
 
-	const pathReq = path.join(decryptPath, req.query.folder).trim();
+	const pathReq = path.join(decryptPath, req.query.title).trim();
 	const result = fileSearch(pathReq);
 
 	if (result === 404) {
@@ -307,6 +311,15 @@ app.get("/search", (req, res) => {
 			])
 		);
 
+	if (req.query.random !== undefined) {
+		videos = videos.filter((e) => e[1].type !== 0);
+		const randomFile = videos[getRandomInt(videos.length)];
+		res.redirect(
+			`/file?path=${randomFile[1].path}&title=${randomFile[0]}`
+		);
+		return;
+	}
+
 	console.log("SORTING =>", req.query.sort);
 	if (req.query.sort) {
 		if (req.query.sort === "latest")
@@ -337,27 +350,27 @@ app.get("/search", (req, res) => {
 
 app.get("/folder", (req, res) => {
 	if (
-		(!req.query.path && req.query.folder) ||
-		(req.query.path && !req.query.folder)
+		(!req.query.path && req.query.title) ||
+		(req.query.path && !req.query.title)
 	) {
 		res.send("All Query Parameters or None are required!!!");
 		return;
 	}
 
-	// console.log({ path: req.query.path, folder: req.query.folder });
+	// console.log({ path: req.query.path, title: req.query.title });
 
 	var filePath = "";
-	if (!req.query.path && !req.query.folder) filePath = "/";
-	else filePath = path.join(req.query.path, req.query.folder);
+	if (!req.query.path && !req.query.title) filePath = "/";
+	else filePath = path.join(req.query.path, req.query.title);
 
-	var result = fileSearch(filePath);
+	var result = Object.entries(fileSearch(filePath));
 	if (result === 404) {
 		res.status(404).send("Wrong Path!!!");
 		return;
 	}
 
 	if (req.query.filter)
-		result = filterFiles(Object.entries(result), [
+		result = filterFiles(result, [
 			...new Set(
 				req.query.filter
 					.split(",")
@@ -366,20 +379,25 @@ app.get("/folder", (req, res) => {
 			),
 		]);
 
+	if (req.query.random !== undefined) {
+		result = result.filter((e) => e[1].type !== 0);
+		const randomFile = result[getRandomInt(result.length)];
+		res.redirect(
+			`/file?path=${randomFile[1].path}&title=${randomFile[0]}`
+		);
+		return;
+	}
+
 	if (req.query.sort === undefined || req.query.sort === "alpha")
-		result = Object.entries(result).sort((a, b) =>
+		result = result.sort((a, b) =>
 			a[0].localeCompare(b[0], "en", {
 				sensitivity: "base",
 			})
 		);
 	if (req.query.sort === "latest")
-		result = Object.entries(result).sort(
-			(a, b) => b[1].birthtime - a[1].birthtime
-		);
+		result = result.sort((a, b) => b[1].birthtime - a[1].birthtime);
 	if (req.query.sort === "oldest")
-		result = Object.entries(result).sort(
-			(a, b) => a[1].birthtime - b[1].birthtime
-		);
+		result = result.sort((a, b) => a[1].birthtime - b[1].birthtime);
 
 	res.render("folder", {
 		tn: Configuration._saved[Configuration._options.TN],
