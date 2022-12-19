@@ -121,6 +121,7 @@ randomFile.addEventListener("click", (e) => {
 	window.location.href = redirectedUrl.href;
 });
 
+// Currently no use of this piece of code
 function cardClickHandler(card) {
 	const cardType = card.classList[1];
 

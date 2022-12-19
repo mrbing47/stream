@@ -173,6 +173,8 @@
 }
 
 .video-card {
+	color: var(--text-color);
+	text-decoration: none;
 	background-color: var(--card-color);
 	box-shadow: var(--card-shadow);
 	display: flex;

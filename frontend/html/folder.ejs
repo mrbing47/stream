@@ -72,12 +72,13 @@
 
 		<div class="video-container">
 			<% data.forEach(file => { %> <% if (file[1].type === 0){%>
-			<div
+			<a
 				class="video-card folder"
 				id="<%= file[0] %>"
 				data-file-type="<%= file[1].type %>"
 				data-file-path="<%= file[1].path %>"
 				onclick="cardClickHandler(this)"
+				href="<%=`/folder?path=${file[1].path}&title=${file[0]}`%>"
 			>
 				<div class="video-img">
 					<i class="fa-solid fa-folder fa-6x"></i>
@@ -93,14 +94,14 @@
 						%>
 					</div>
 				</div>
-			</div>
+			</a>
 			<% } %> <% if (file[1].type === 1){%>
-			<div
+			<a
 				class="video-card file"
 				id="<%= file[0] %>"
 				data-file-type="<%= file[1].type %>"
 				data-file-path="<%= file[1].path %>"
-				onclick="cardClickHandler(this)"
+				href="<%=`/file?path=${file[1].path}&title=${file[0]}`%>"
 			>
 				<div class="video-img">
 					<% if (tn) { %>
@@ -138,15 +139,15 @@
 						<%= file[1].dimensions %>
 					</div>
 				</div>
-			</div>
+			</a>
 
 			<% } %> <% if (file[1].type === 2){%>
-			<div
+			<a
 				class="video-card file"
 				id="<%= file[0] %>"
 				data-file-type="<%= file[1].type %>"
 				data-file-path="<%= file[1].path %>"
-				onclick="cardClickHandler(this)"
+				href="<%=`/file?path=${file[1].path}&title=${file[0]}`%>"
 			>
 				<div class="video-img">
 					<i class="fa-solid fa-volume-high fa-6x"></i>
@@ -172,15 +173,15 @@
 						Date(file[1].birthtime).toString().slice(4,15)%>
 					</div>
 				</div>
-			</div>
+			</a>
 
 			<% } %> <% if (file[1].type === 3){%>
-			<div
+			<a
 				class="video-card file"
 				id="<%= file[0] %>"
 				data-file-type="<%= file[1].type %>"
 				data-file-path="<%= file[1].path %>"
-				onclick="cardClickHandler(this)"
+				href="<%=`/file?path=${file[1].path}&title=${file[0]}`%>"
 			>
 				<div class="video-img">
 					<% if (tn) { %>
@@ -215,7 +216,7 @@
 						<%= file[1].dimensions %>
 					</div>
 				</div>
-			</div>
+			</a>
 
 			<% } %> <% }); %>
 		</div>
