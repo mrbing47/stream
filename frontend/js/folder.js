@@ -9,6 +9,7 @@ const submitQuery = document.getElementById("search");
 const randomFile = document.getElementById("random-container");
 
 const urlParams = new URLSearchParams(window.location.search);
+console.log("Window location: ", window.location);
 
 if (window.location.pathname == "/search") {
 	menu.insertAdjacentHTML(
@@ -113,9 +114,9 @@ submitQuery.addEventListener("click", () => {
 });
 
 randomFile.addEventListener("click", (e) => {
-	urlParams.set("random", 1);
 	const redirectedUrl = new URL(window.location.href);
 	redirectedUrl.search = urlParams;
+	redirectedUrl.searchParams.append("random", 1);
 
 	window.location.href = redirectedUrl.href;
 });
@@ -128,7 +129,7 @@ function cardClickHandler(card) {
 		window.location.origin
 	);
 	const currUrlParams = new URLSearchParams(window.location.search);
-	// console.log(card.dataset);
+
 	const newUrlParams = new URLSearchParams({
 		path: card.dataset.filePath,
 		title: card.id,
@@ -154,6 +155,5 @@ function cardClickHandler(card) {
 			});
 	}
 
-	// console.log(url.href);
 	window.location.href = url.href;
 }

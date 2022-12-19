@@ -127,5 +127,4 @@ To use this functionality, you just need to use `&` in the strings. In order to 
 
 ## NOTE
 
-1. To use `stream.cmd` as a **Command Prompt** command, add the **Project** directory to the `PATH` variables.
-2. For now, there is no way to escape `&` in search query. `(NEED FIX)`.
+1. For now, there is no way to escape `&` in search query. `(NEED FIX)`.
