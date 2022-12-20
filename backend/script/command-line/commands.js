@@ -171,7 +171,7 @@ class Command {
 		this.options.args = this.#flagMapper(obj.options?.args);
 
 		this.default = obj.default ?? false;
-		this.use = obj.use;
+		this.usage = obj.usage;
 		this.description = obj.description;
 		this.action = obj.action.bind(this);
 	}

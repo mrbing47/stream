@@ -63,6 +63,8 @@ SECRET_KEY=a secret string for session
 
 This project comes with a custom build CLI menu to help users setup the project configuration at ease.
 
+## **Setup**
+
 Edit following shell files based on OS.
 
 -   LINUX / MAC) `terminal/bash/stream`.
@@ -85,6 +87,10 @@ node "/path/to/project/index.js" %*
 This files allows the user to start the server any place on any directory using **Terminal** or **Command Prompt**.
 
 After completing the steps mentioned above, you will be able to configure the root directory of the media and pass _kwargs and args_ from cli itself.
+
+## **Usage**
+
+_**TODO**_
 
 ---
 

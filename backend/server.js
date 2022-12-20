@@ -299,17 +299,16 @@ app.get("/search", (req, res) => {
 	const query = req.query.q.replaceAll("%26", "&").trim();
 	console.log("REPLACED `&` QUERY =>", query);
 	let videos = storeQuery(query, 1);
+
 	if (req.query.filter)
-		videos = Object.entries(
-			filterFiles(videos, [
-				...new Set(
-					req.query.filter
-						.split(",")
-						.map((e) => parseInt(e))
-						.filter((e) => !isNaN(e))
-				),
-			])
-		);
+		videos = filterFiles(videos, [
+			...new Set(
+				req.query.filter
+					.split(",")
+					.map((e) => parseInt(e))
+					.filter((e) => !isNaN(e))
+			),
+		]);
 
 	if (req.query.random !== undefined) {
 		videos = videos.filter((e) => e[1].type !== 0);
