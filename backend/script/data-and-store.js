@@ -166,11 +166,12 @@ async function scanFiles(root, filesToScan = [], level = 1) {
 								timestamps: ["20%"],
 								filename: `%b-${fileType}.png`,
 								folder: tnPath,
+								size: "300x?",
 							});
 						if (fileType === FileType.IMAGE)
 							sharp(filePath)
 								.resize({
-									height: 300,
+									width: 300,
 									fit: sharp.fit.cover,
 								})
 								.toFile(
@@ -361,17 +362,15 @@ function filterFiles(files = [], fileTypes = []) {
 }
 
 function flattenObj(obj) {
-	let res = { ...obj.files };
+	let res = Object.entries(obj.files);
 	for (let i in obj.folders) {
 		const { files, folders, ...folderMetaData } = obj.folders[i];
 
-		res = {
+		res = [
 			...res,
-			[i]: {
-				...folderMetaData,
-			},
+			[i, { ...folderMetaData }],
 			...flattenObj(obj.folders[i]),
-		};
+		];
 	}
 	return res;
 }
@@ -402,11 +401,17 @@ async function init() {
 	const read_data = readData();
 	const read_tokens = readTokens();
 	const [new_data, isChange] = await iterateFiles("/", read_data);
-	const store = new Store({ text: (e) => e[0], tokens: read_tokens });
+	const store = new Store({
+		text: (e) => e[0],
+		unique: (e) => path.join(e[1].path, e[0]),
+		tokens: read_tokens,
+	});
 	if (isChange) writeData(new_data);
 
 	if (isChange || Object.keys(store.tokens).length === 0) {
-		store.tokenize(Object.entries(flattenObj(new_data)));
+		const flatData = flattenObj(new_data);
+		console.log(flatData);
+		store.tokenize(flatData);
 		writeTokens(store.tokens);
 	}
 	return [

@@ -4,10 +4,12 @@ class Store {
 	#tokenReg = /[a-z0-9]+/g;
 	#tokens = {};
 	#text;
+	#unique;
 
-	constructor({ text = (e) => e, tokens = {} }) {
+	constructor({ text = (e) => e, tokens = {}, unique }) {
 		this.#text = text;
 		this.#tokens = tokens;
+		this.#unique = unique ?? text;
 	}
 
 	tokenize(arr, { merge = false } = {}) {
@@ -45,16 +47,18 @@ class Store {
 			for (let qt of querySet) {
 				if (this.#tokens[qt]) {
 					this.#tokens[qt].forEach((ele) => {
-						const text = this.#text(ele);
-						if (queryObj[text]) queryObj[text].cnt++;
+						const unique = this.#unique(ele);
+						if (queryObj[unique]) queryObj[unique].cnt++;
 						else
-							queryObj[text] = {
+							queryObj[unique] = {
 								data: ele,
 								cnt: 1,
 							};
 					});
 				}
 			}
+
+			console.log(queryObj);
 
 			const sortedRes = Object.entries(queryObj)
 				.sort(([, a], [, b]) => b.cnt - a.cnt)
@@ -66,7 +70,7 @@ class Store {
 					[]
 				);
 
-			// console.log("RESULTS FOR A QUERY =>", q, sortedRes);
+			console.log("RESULTS FOR A QUERY =>", q, sortedRes);
 			result = [...result, ...sortedRes];
 		}
 		return result;
