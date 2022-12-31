@@ -225,72 +225,65 @@ app.get("/file", (req, res) => {
 	const filePath = path.join(File.ROOT, pathReq);
 	const fileSize = result.size;
 
-	if (result.type === 1 || result.type === 2) {
+	if (
+		req.session.usertype === "leader" &&
+		!req.cookies.hasOwnProperty("watchmode")
+	) {
+		const roomIx = Rooms.findIndex(
+			(value) => value.id === req.session.roomid
+		);
+
 		if (
-			req.session.usertype === "leader" &&
-			!req.cookies.hasOwnProperty("watchmode")
+			roomIx != -1 &&
+			Rooms[roomIx].users.some(
+				(value) => value.id === req.session.userid
+			) &&
+			req.cookies.video &&
+			!req.session.insideRoom
 		) {
-			const roomIx = Rooms.findIndex(
-				(value) => value.id === req.session.roomid
-			);
-
-			if (
-				roomIx != -1 &&
-				Rooms[roomIx].users.some(
-					(value) => value.id === req.session.userid
-				) &&
-				req.cookies.video &&
-				!req.session.insideRoom
-			) {
-				const video = JSON.parse(req.cookies.video);
-				video.src = req.url;
-				Rooms[roomIx].video = video;
-				res.redirect("/room/" + req.session.roomid);
-				return;
-			}
-		}
-
-		const range = req.headers.range;
-
-		if (range) {
-			const parts = range.replace(/bytes=/, "").split("-");
-			const start = parseInt(parts[0], 10);
-			const end = parts[1]
-				? parseInt(parts[1], 10)
-				: fileSize - 1;
-
-			if (start >= fileSize) {
-				res.status(416).send(
-					"Requested range not satisfiable\n" +
-						start +
-						" >= " +
-						fileSize
-				);
-				return;
-			}
-
-			const chunksize = end - start + 1;
-			const file = fs.createReadStream(filePath, { start, end });
-			const head = {
-				"Content-Range": `bytes ${start}-${end}/${fileSize}`,
-				"Accept-Ranges": "bytes",
-				"Content-Length": chunksize,
-				"Content-Type": "video/mp4",
-			};
-
-			res.writeHead(206, head);
-			file.pipe(res);
-		} else {
-			const head = {
-				"Content-Length": fileSize,
-				"Content-Type": "video/mp4",
-			};
-			res.writeHead(200, head);
-			fs.createReadStream(filePath).pipe(res);
+			const video = JSON.parse(req.cookies.video);
+			video.src = req.url;
+			Rooms[roomIx].video = video;
+			res.redirect("/room/" + req.session.roomid);
+			return;
 		}
 	}
-	if (result.type === 3) {
-		res.sendFile(filePath);
+
+	const range = req.headers.range;
+
+	if (range) {
+		const parts = range.replace(/bytes=/, "").split("-");
+		const start = parseInt(parts[0], 10);
+		const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+
+		if (start >= fileSize) {
+			res.status(416).send(
+				"Requested range not satisfiable\n" +
+					start +
+					" >= " +
+					fileSize
+			);
+			return;
+		}
+
+		const chunksize = end - start + 1;
+		const file = fs.createReadStream(filePath, { start, end });
+		const head = {
+			"Content-Range": `bytes ${start}-${end}/${fileSize}`,
+			"Accept-Ranges": "bytes",
+			"Content-Length": chunksize,
+			"Content-Type": "video/mp4",
+		};
+
+		res.writeHead(206, head);
+		file.pipe(res);
+	} else {
+		const head = {
+			"Content-Length": fileSize,
+			"Content-Type": "video/mp4",
+		};
+		res.writeHead(200, head);
+		fs.createReadStream(filePath).pipe(res);
 	}
 });
 
