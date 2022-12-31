@@ -58,7 +58,7 @@ class Store {
 				}
 			}
 
-			console.log(queryObj);
+			// console.log(queryObj);
 
 			const sortedRes = Object.entries(queryObj)
 				.sort(([, a], [, b]) => b.cnt - a.cnt)
@@ -70,7 +70,7 @@ class Store {
 					[]
 				);
 
-			console.log("RESULTS FOR A QUERY =>", q, sortedRes);
+			// console.log("RESULTS FOR A QUERY =>", q, sortedRes);
 			result = [...result, ...sortedRes];
 		}
 		return result;
