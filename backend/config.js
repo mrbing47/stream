@@ -40,6 +40,7 @@ class Configuration {
 		AUDIO_EXT: "audio_ext",
 		IMAGE_EXT: "image_ext",
 		TN: "tn",
+		BROWSER: "browser",
 	};
 	static #default = {
 		[Configuration._options.PORT]: parseInt(
@@ -66,6 +67,7 @@ class Configuration {
 			"webp",
 		],
 		[Configuration._options.TN]: true,
+		[Configuration._options.BROWSER]: true,
 	};
 	static #saved = {};
 

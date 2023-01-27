@@ -29,6 +29,7 @@ const frontend = path.join(__dirname, "../frontend");
 let Rooms = [];
 
 function getCookies(strCookies) {
+	if (!strCookies) return;
 	var cookies = strCookies.split(";");
 
 	var result = {};
@@ -67,7 +68,7 @@ app.use(session);
 app.use("/file", (req, res, next) => {
 	const cookies = getCookies(req.headers.cookie);
 
-	if (cookies.video) {
+	if (cookies?.video) {
 		const video = JSON.parse(cookies.video);
 		req.video = video;
 	}
@@ -224,66 +225,72 @@ app.get("/file", (req, res) => {
 
 	const filePath = path.join(File.ROOT, pathReq);
 	const fileSize = result.size;
-
-	if (
-		req.session.usertype === "leader" &&
-		!req.cookies.hasOwnProperty("watchmode")
-	) {
-		const roomIx = Rooms.findIndex(
-			(value) => value.id === req.session.roomid
-		);
-
+	if (result.type === 1 || result.type === 2) {
 		if (
-			roomIx != -1 &&
-			Rooms[roomIx].users.some(
-				(value) => value.id === req.session.userid
-			) &&
-			req.cookies.video &&
-			!req.session.insideRoom
+			req.session.usertype === "leader" &&
+			!req.cookies.hasOwnProperty("watchmode")
 		) {
-			const video = JSON.parse(req.cookies.video);
-			video.src = req.url;
-			Rooms[roomIx].video = video;
-			res.redirect("/room/" + req.session.roomid);
-			return;
+			const roomIx = Rooms.findIndex(
+				(value) => value.id === req.session.roomid
+			);
+
+			if (
+				roomIx != -1 &&
+				Rooms[roomIx].users.some(
+					(value) => value.id === req.session.userid
+				) &&
+				req.cookies.video &&
+				!req.session.insideRoom
+			) {
+				const video = JSON.parse(req.cookies.video);
+				video.src = req.url;
+				Rooms[roomIx].video = video;
+				res.redirect("/room/" + req.session.roomid);
+				return;
+			}
+		}
+
+		const range = req.headers.range;
+
+		if (range) {
+			const parts = range.replace(/bytes=/, "").split("-");
+			const start = parseInt(parts[0], 10);
+			const end = parts[1]
+				? parseInt(parts[1], 10)
+				: fileSize - 1;
+
+			if (start >= fileSize) {
+				res.status(416).send(
+					"Requested range not satisfiable\n" +
+						start +
+						" >= " +
+						fileSize
+				);
+				return;
+			}
+
+			const chunksize = end - start + 1;
+			const file = fs.createReadStream(filePath, { start, end });
+			const head = {
+				"Content-Range": `bytes ${start}-${end}/${fileSize}`,
+				"Accept-Ranges": "bytes",
+				"Content-Length": chunksize,
+				"Content-Type": "video/*",
+			};
+
+			res.writeHead(206, head);
+			file.pipe(res);
+		} else {
+			const head = {
+				"Content-Length": fileSize,
+				"Content-Type": "video/mp4",
+			};
+			res.writeHead(200, head);
+			fs.createReadStream(filePath).pipe(res);
 		}
 	}
-
-	const range = req.headers.range;
-
-	if (range) {
-		const parts = range.replace(/bytes=/, "").split("-");
-		const start = parseInt(parts[0], 10);
-		const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-
-		if (start >= fileSize) {
-			res.status(416).send(
-				"Requested range not satisfiable\n" +
-					start +
-					" >= " +
-					fileSize
-			);
-			return;
-		}
-
-		const chunksize = end - start + 1;
-		const file = fs.createReadStream(filePath, { start, end });
-		const head = {
-			"Content-Range": `bytes ${start}-${end}/${fileSize}`,
-			"Accept-Ranges": "bytes",
-			"Content-Length": chunksize,
-			"Content-Type": "video/mp4",
-		};
-
-		res.writeHead(206, head);
-		file.pipe(res);
-	} else {
-		const head = {
-			"Content-Length": fileSize,
-			"Content-Type": "video/mp4",
-		};
-		res.writeHead(200, head);
-		fs.createReadStream(filePath).pipe(res);
+	if (result.type === 3) {
+		res.sendFile(filePath);
 	}
 });
 
@@ -495,7 +502,7 @@ io.on("connection", (socket) => {
 	});
 });
 
-const initAndListen = async function (PORT) {
+const initAndListen = async function (PORT, BROWSER) {
 	try {
 		[fileSearch, filterFiles, storeQuery] = await dataAndStore();
 
@@ -506,8 +513,7 @@ const initAndListen = async function (PORT) {
 		for (let i in IPs) {
 			console.log(i, "=>", IPs[i]);
 		}
-
-		utils.openBrowser("http://localhost:" + PORT);
+		if (BROWSER) utils.openBrowser("http://localhost:" + PORT);
 		console.log("\n\n\n");
 	} catch (err) {
 		console.log(err);
@@ -515,6 +521,6 @@ const initAndListen = async function (PORT) {
 	}
 };
 
-module.exports = async (PORT) => {
-	http.listen(PORT, () => initAndListen(PORT));
+module.exports = async (PORT, BROWSER) => {
+	http.listen(PORT, () => initAndListen(PORT, BROWSER));
 };

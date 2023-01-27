@@ -178,10 +178,11 @@ class Command {
 
 	#flagMapper(flags = []) {
 		const res = {};
-		res.l2s = flags.reduce((prev, curr) => {
-			prev[curr[0]] = curr[1];
-			return prev;
-		}, {});
+
+		res.l2s = flags.reduce(
+			(prev, curr) => ({ ...prev, [curr[0]]: curr[1] }),
+			{}
+		);
 		res.s2l = flags.reduce((prev, curr) => {
 			prev[curr[1]] = curr[0];
 			return prev;

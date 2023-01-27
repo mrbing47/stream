@@ -107,6 +107,7 @@ class CommandOptions {
 	static TN = [Configuration._options.TN, "t"];
 	static VIDEO_EXT = [Configuration._options.VIDEO_EXT, "v"];
 	static YES = ["yes", "y"];
+	static BROWSER = [Configuration._options.BROWSER, "b"];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,6 +156,10 @@ const init = new Command({
 				},
 				[Configuration._options.TN]: {
 					text: "Do you want to generate Thumbnails for video and images (Y[default]/N):",
+					type: Type.BOOLEAN,
+				},
+				[Configuration._options.TN]: {
+					text: "Do you want to open browser when server starts (Y[default]/N):",
 					type: Type.BOOLEAN,
 				},
 			};
@@ -214,6 +219,7 @@ const reset = new Command({
 			CommandOptions.AUDIO_EXT,
 			CommandOptions.IMAGE_EXT,
 			CommandOptions.TN,
+			CommandOptions.BROWSER,
 			CommandOptions.SILENT,
 		],
 	},
@@ -264,6 +270,7 @@ const update = new Command({
 			CommandOptions.AUDIO_EXT,
 			CommandOptions.IMAGE_EXT,
 			CommandOptions.TN,
+			CommandOptions.BROWSER,
 			CommandOptions.SILENT,
 		],
 	},
@@ -309,6 +316,11 @@ const update = new Command({
 				text: "Do you want to generate Thumbnails for video and images:",
 				type: Type.BOOLEAN,
 			};
+		if (options.args.b)
+			questions[Configuration._options.BROWSER] = {
+				text: "Do you want to open browser when server starts:",
+				type: Type.BOOLEAN,
+			};
 
 		// console.log({ data, options, questions });
 		console.log();
@@ -344,6 +356,7 @@ const run = new Command({
 			CommandOptions.AUDIO_EXT,
 			CommandOptions.IMAGE_EXT,
 			CommandOptions.TN,
+			CommandOptions.BROWSER,
 		],
 		args: [CommandOptions.SILENT],
 	},
@@ -372,7 +385,10 @@ const run = new Command({
 					...Configuration._default.ignore_files,
 					...ele[1].split(",").map((e) => e.trim()),
 				];
-			if (ele[0] === CommandOptions.TN[1])
+			if (
+				ele[0] === CommandOptions.TN[1] ||
+				ele[0] === CommandOptions.BROWSER[1]
+			)
 				input = input.toLowerCase() === "y";
 
 			// console.log(ele, input);
@@ -380,13 +396,17 @@ const run = new Command({
 			Configuration._saved[this.options.kwargs.s2l[ele[0]]] =
 				input;
 		});
+
 		Object.entries(options.args).forEach((ele) => {
 			Configuration._saved[this.options.args.s2l[ele[0]]] = true;
 		});
 
 		// console.log({ config: Configuration._saved, options });
 
-		await server(Configuration._saved.port);
+		await server(
+			Configuration._saved.port,
+			Configuration._saved.browser
+		);
 
 		// console.log({ data, options });
 	},

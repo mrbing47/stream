@@ -410,7 +410,7 @@ async function init() {
 
 	if (isChange || Object.keys(store.tokens).length === 0) {
 		const flatData = flattenObj(new_data);
-		console.log(flatData);
+		// console.log(flatData);
 		store.tokenize(flatData);
 		writeTokens(store.tokens);
 	}
