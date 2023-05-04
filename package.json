@@ -23,7 +23,7 @@
 		"morgan": "^1.10.0",
 		"readline-sync": "^1.4.10",
 		"sharp": "^0.31.2",
-		"socket.io": "^4.4.1",
+		"socket.io": "^4.6.1",
 		"socket.io-cookie-parser": "^1.0.0",
 		"str-temp": "^1.0.5",
 		"uniqid": "^5.2.0"
