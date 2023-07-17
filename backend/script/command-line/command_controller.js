@@ -158,7 +158,7 @@ const init = new Command({
 					text: "Do you want to generate Thumbnails for video and images (Y[default]/N):",
 					type: Type.BOOLEAN,
 				},
-				[Configuration._options.TN]: {
+				[Configuration._options.BROWSER]: {
 					text: "Do you want to open browser when server starts (Y[default]/N):",
 					type: Type.BOOLEAN,
 				},

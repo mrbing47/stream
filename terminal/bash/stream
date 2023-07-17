@@ -1,1 +1,1 @@
-node "/path/to/project/index.js" $*
+node "/Users/sarthikgarg/Developer/Stream-Video/index.js" $*

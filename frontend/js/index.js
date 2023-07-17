@@ -47,7 +47,7 @@ function makeServerCall(usertype) {
 		}
 
 	fetch("/login", {
-		method: "post",
+		method: "POST",
 		body: JSON.stringify({
 			room: rName,
 			usertype: usertype,
