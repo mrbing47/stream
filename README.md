@@ -131,7 +131,8 @@ To use this functionality, you just need to use `&` in the strings. In order to 
 -   [ ] Delete Folder's Thumbnails.
 -   [ ] Browser boolean not working in terminal.
 -   [ ] Write `help` command.
--   [ ]
+-   [ ] Catch the error when the file is deleted from the system but not from the db.
+-   [ ] Make the filenames URL safe as some filenames might contains + and other URL characters.
 
 ---
 

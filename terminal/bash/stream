@@ -1,1 +1,2 @@
+find . -type f -name "._*" -print -delete
 node "/Users/sarthikgarg/Developer/Stream-Video/index.js" $*
